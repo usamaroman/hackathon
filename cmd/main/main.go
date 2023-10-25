@@ -37,12 +37,20 @@ func main() {
 	// )
 
 	pgConfig := postgresql.NewPgConfig(
-		"chechyotka",
-		"5432",
-		"localhost",
-		"5432",
-		"hackathon",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB"),
 	)
+
+	//pgConfig := postgresql.NewPgConfig(
+	//	"chechyotka",
+	//	"5432",
+	//	"localhost",
+	//	"5432",
+	//	"hackathon",
+	//)
 
 	pgClient := postgresql.NewClient(ctx, pgConfig)
 	_ = pgClient
