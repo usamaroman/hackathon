@@ -6,6 +6,7 @@ import (
 	"github.com/usamaroman/hackathon/internal/project"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -27,21 +28,21 @@ func main() {
 	//log.Println(client)
 
 	log.Println("postgresql config init")
-	//pgConfig := postgresql.NewPgConfig(
-	//	os.Getenv("POSTGRES_USER"),
-	//	os.Getenv("POSTGRES_PASSWORD"),
-	//	os.Getenv("POSTGRES_HOST"),
-	//	os.Getenv("POSTGRES_PASSWORD"),
-	//	os.Getenv("POSTGRES_DB"),
-	//)
-
 	pgConfig := postgresql.NewPgConfig(
-		"chechyotka",
-		"5432",
-		"localhost",
-		"5432",
-		"hackathon",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB"),
 	)
+
+	//pgConfig := postgresql.NewPgConfig(
+	//	"chechyotka",
+	//	"5432",
+	//	"localhost",
+	//	"5432",
+	//	"hackathon",
+	//)
 
 	pgClient := postgresql.NewClient(ctx, pgConfig)
 	_ = pgClient
