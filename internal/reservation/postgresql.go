@@ -2,11 +2,12 @@ package reservation
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5/pgxpool"
-	reservation "github.com/romanchechyotkin/car_booking_service/internal/reservation/model"
-	"github.com/romanchechyotkin/car_booking_service/pkg/client/postgresql"
 	"log"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/usamaroman/hackathon/pkg/client/postgresql"
 )
 
 const (
@@ -18,8 +19,8 @@ type Repository struct {
 }
 
 type Storage interface {
-	CreateReservation(ctx context.Context, dto reservation.Dto) error
-	GetReservationDates(ctx context.Context, id string) (dates []reservation.TimeFromDB, err error)
+	CreateReservation(ctx context.Context, dto Dto) error
+	GetReservationDates(ctx context.Context, id string) (dates []TimeFromDB, err error)
 }
 
 func NewRepository(client *pgxpool.Pool) *Repository {
@@ -28,7 +29,7 @@ func NewRepository(client *pgxpool.Pool) *Repository {
 	}
 }
 
-func (r *Repository) CreateReservation(ctx context.Context, dto reservation.Dto) error {
+func (r *Repository) CreateReservation(ctx context.Context, dto Dto) error {
 	query := `
 		INSERT INTO public.reservations (customer_id, seller_id, car_id, start_date, end_date, total_price) 
 		VALUES ($1, $2, $3, $4, $5, $6)
@@ -54,7 +55,7 @@ func (r *Repository) CreateReservation(ctx context.Context, dto reservation.Dto)
 	return err
 }
 
-func (r *Repository) GetReservationDates(ctx context.Context, id string) (dates []reservation.TimeFromDB, err error) {
+func (r *Repository) GetReservationDates(ctx context.Context, id string) (dates []TimeFromDB, err error) {
 	query := `
 		SELECT start_date, end_date
 		FROM public.reservations
@@ -69,7 +70,7 @@ func (r *Repository) GetReservationDates(ctx context.Context, id string) (dates 
 	}
 
 	for rows.Next() {
-		var dto reservation.TimeFromDB
+		var dto TimeFromDB
 
 		err = rows.Scan(&dto.StartDate, &dto.EndDate)
 		if err != nil {
@@ -82,7 +83,6 @@ func (r *Repository) GetReservationDates(ctx context.Context, id string) (dates 
 	return dates, err
 }
 
-//
 //func (r *Repository) GetAllCarReservations(ctx context.Context, id string) (res []reservation.TimeFromDB, err error) {
 //	query := `
 //		SELECT start_date, end_date

@@ -1,4 +1,4 @@
-package images_storage
+package car
 
 import (
 	"context"
@@ -7,19 +7,19 @@ import (
 	"log"
 )
 
-type Repository struct {
-	client *pgxpool.Pool
-}
-
 type ImageStorage interface {
 	SaveImageToDB(ctx context.Context, url, carId string) error
 }
 
-func NewRepository(client *pgxpool.Pool) ImageStorage {
-	return &Repository{client: client}
+type RepositoryImage struct {
+	client *pgxpool.Pool
 }
 
-func (r *Repository) SaveImageToDB(ctx context.Context, url, carId string) error {
+func NewImageStorage(client *pgxpool.Pool) ImageStorage {
+	return &RepositoryImage{client: client}
+}
+
+func (r *RepositoryImage) SaveImageToDB(ctx context.Context, url, carId string) error {
 	query := `
 		INSERT INTO public.car_images (url, car_id) 
 		VALUES ($1, $2)

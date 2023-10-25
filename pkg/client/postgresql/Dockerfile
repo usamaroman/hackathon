@@ -1,6 +1,6 @@
 FROM postgres
 
-ENV POSTGRES_DB car_booking_service
+ENV POSTGRES_DB hackathon
 ENV POSTGRES_USER postgres
 ENV POSTGRES_PASSWORD 5432
 

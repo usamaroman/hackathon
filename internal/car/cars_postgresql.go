@@ -1,47 +1,48 @@
-package cars_storage
+package car
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
-	car "github.com/romanchechyotkin/car_booking_service/internal/car/model"
-	user "github.com/romanchechyotkin/car_booking_service/internal/user/model"
-	"github.com/romanchechyotkin/car_booking_service/pkg/client/postgresql"
 	"log"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/usamaroman/hackathon/internal/user"
+	"github.com/usamaroman/hackathon/pkg/client/postgresql"
 )
 
-const (
-	SORT_BY_ASC_PRICE  = "prc.a"
-	SORT_BY_DESC_PRICE = "prc.d"
-	SORT_BY_ASC_YEAR   = "y.a"
-	SORT_BY_DESC_YEAR  = "y.d"
-)
+//const (
+//	SORT_BY_ASC_PRICE  = "prc.a"
+//	SORT_BY_DESC_PRICE = "prc.d"
+//	SORT_BY_ASC_YEAR   = "y.a"
+//	SORT_BY_DESC_YEAR  = "y.d"
+//)
 
 type Storage interface {
-	CreateCar(ctx context.Context, car *car.CreateCarFormDto, userId string) error
-	GetAllCars(ctx context.Context, opt ...string) ([]car.GetCarDto, error)
-	GetCar(ctx context.Context, id string) (c car.Car, err error)
+	CreateCar(ctx context.Context, car *CreateCarFormDto, userId string) error
+	GetAllCars(ctx context.Context, opt ...string) ([]GetCarDto, error)
+	GetCar(ctx context.Context, id string) (c Car, err error)
 	GetCarOwner(ctx context.Context, id string) (userId string, err error)
 	ChangeIsAvailable(ctx context.Context, id string) error
-	GetAllCarRatings(ctx context.Context, id string) ([]car.GetAllCarRatingsDto, error)
+	GetAllCarRatings(ctx context.Context, id string) ([]GetAllCarRatingsDto, error)
 	CreateRating(ctx context.Context, dto user.RateDto, carId, ratedBy string) error
 	GetAmountCarRatings(ctx context.Context, carId string) (amount float32, sum float32, err error)
 	ChangeCarRating(ctx context.Context, id string, rating float32) error
 }
 
-type Repository struct {
+type CarRepository struct {
 	client *pgxpool.Pool
 }
 
-func NewRepository(client *pgxpool.Pool) *Repository {
-	return &Repository{
+func NewCarRepository(client *pgxpool.Pool) Storage {
+	return &CarRepository{
 		client: client,
 	}
 }
 
-func (r *Repository) CreateCar(ctx context.Context, car *car.CreateCarFormDto, userId string) error {
+func (r *CarRepository) CreateCar(ctx context.Context, car *CreateCarFormDto, userId string) error {
 	conn, err := r.client.Acquire(ctx)
 	if err != nil {
 		return err
@@ -87,7 +88,7 @@ func (r *Repository) CreateCar(ctx context.Context, car *car.CreateCarFormDto, u
 	return nil
 }
 
-func (r *Repository) GetAllCars(ctx context.Context, opt ...string) ([]car.GetCarDto, error) {
+func (r *CarRepository) GetAllCars(ctx context.Context, opt ...string) ([]GetCarDto, error) {
 
 	var orderBy, query string
 
@@ -143,9 +144,9 @@ func (r *Repository) GetAllCars(ctx context.Context, opt ...string) ([]car.GetCa
 	}
 	defer rows.Close()
 
-	cars := make([]car.GetCarDto, 0)
+	cars := make([]GetCarDto, 0)
 	for rows.Next() {
-		var c car.GetCarDto
+		var c GetCarDto
 		err = rows.Scan(&c.Car.Id, &c.Car.Brand, &c.Car.Model, &c.Car.PricePerDay, &c.Car.Year, &c.Car.IsAvailable, &c.Car.Rating, &c.Car.CreatedAt, &c.UserId)
 		if err != nil {
 			log.Println(err)
@@ -164,7 +165,7 @@ func (r *Repository) GetAllCars(ctx context.Context, opt ...string) ([]car.GetCa
 
 		images := make([]string, 0)
 		for r.Next() {
-			var i car.Image
+			var i Image
 
 			err = r.Scan(&i.Url)
 			if err != nil {
@@ -182,7 +183,7 @@ func (r *Repository) GetAllCars(ctx context.Context, opt ...string) ([]car.GetCa
 	return cars, err
 }
 
-func (r *Repository) GetCar(ctx context.Context, id string) (c car.Car, err error) {
+func (r *CarRepository) GetCar(ctx context.Context, id string) (c Car, err error) {
 	carQuery := `
 		SELECT id, brand, model, price_per_day, year, is_available, rating
 		FROM public.cars
@@ -210,7 +211,7 @@ func (r *Repository) GetCar(ctx context.Context, id string) (c car.Car, err erro
 
 	images := make([]string, 0)
 	for rows.Next() {
-		var i car.Image
+		var i Image
 
 		err = rows.Scan(&i.Url)
 		if err != nil {
@@ -226,7 +227,7 @@ func (r *Repository) GetCar(ctx context.Context, id string) (c car.Car, err erro
 	return c, nil
 }
 
-func (r *Repository) GetCarOwner(ctx context.Context, id string) (userId string, err error) {
+func (r *CarRepository) GetCarOwner(ctx context.Context, id string) (userId string, err error) {
 	query := `
 		SELECT user_id
 		FROM public.cars_users
@@ -243,7 +244,7 @@ func (r *Repository) GetCarOwner(ctx context.Context, id string) (userId string,
 	return userId, nil
 }
 
-func (r *Repository) ChangeIsAvailable(ctx context.Context, id string) error {
+func (r *CarRepository) ChangeIsAvailable(ctx context.Context, id string) error {
 	query := `
 		UPDATE public.cars
 		SET is_available = false
@@ -259,7 +260,7 @@ func (r *Repository) ChangeIsAvailable(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r *Repository) GetAllCarRatings(ctx context.Context, id string) ([]car.GetAllCarRatingsDto, error) {
+func (r *CarRepository) GetAllCarRatings(ctx context.Context, id string) ([]GetAllCarRatingsDto, error) {
 	query := `
 		SELECT r.rate, r.comment, u.full_name
 		FROM cars_ratings r
@@ -275,9 +276,9 @@ func (r *Repository) GetAllCarRatings(ctx context.Context, id string) ([]car.Get
 		return nil, err
 	}
 
-	var ratings []car.GetAllCarRatingsDto
+	var ratings []GetAllCarRatingsDto
 	for rows.Next() {
-		var rate car.GetAllCarRatingsDto
+		var rate GetAllCarRatingsDto
 
 		err = rows.Scan(&rate.Rating, &rate.Comment, &rate.User)
 		if err != nil {
@@ -291,7 +292,7 @@ func (r *Repository) GetAllCarRatings(ctx context.Context, id string) ([]car.Get
 	return ratings, nil
 }
 
-func (r *Repository) CreateRating(ctx context.Context, dto user.RateDto, carId, ratedBy string) error {
+func (r *CarRepository) CreateRating(ctx context.Context, dto user.RateDto, carId, ratedBy string) error {
 	query := `
 		INSERT INTO public.cars_ratings  (rate, comment, car_id, rate_by_user)
 		VALUES ($1, $2, $3, $4)
@@ -308,7 +309,7 @@ func (r *Repository) CreateRating(ctx context.Context, dto user.RateDto, carId, 
 	return nil
 }
 
-func (r *Repository) GetAmountCarRatings(ctx context.Context, carId string) (amount float32, sum float32, err error) {
+func (r *CarRepository) GetAmountCarRatings(ctx context.Context, carId string) (amount float32, sum float32, err error) {
 	query := `
 		SELECT count(*), sum(rate) FROM cars_ratings WHERE car_id = $1
 	`
@@ -319,7 +320,7 @@ func (r *Repository) GetAmountCarRatings(ctx context.Context, carId string) (amo
 	return amount, sum, nil
 }
 
-func (r *Repository) ChangeCarRating(ctx context.Context, id string, rating float32) error {
+func (r *CarRepository) ChangeCarRating(ctx context.Context, id string, rating float32) error {
 	query := `
 		UPDATE public.cars
 		SET rating = $1

@@ -13,11 +13,8 @@ type GetUsersDto struct {
 }
 
 type UpdateUserDto struct {
-	Email           string `json:"email" binding:"email"`
-	Password        string `json:"password"`
-	FullName        string `json:"full_name"`
-	TelephoneNumber string `json:"telephone_number" binding:"e164"`
-	City            string `json:"city"`
+	Email    string `json:"email" binding:"email"`
+	Password string `json:"password"`
 }
 
 type RateDto struct {

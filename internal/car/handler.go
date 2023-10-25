@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/minio/minio-go/v7"
 	"log"
 	"math"
 	"net/http"
@@ -14,17 +13,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/minio/minio-go/v7"
 
-	car "github.com/romanchechyotkin/car_booking_service/internal/car/model"
-	car2 "github.com/romanchechyotkin/car_booking_service/internal/car/storage/cars_storage"
-	"github.com/romanchechyotkin/car_booking_service/internal/car/storage/images_storage"
-	"github.com/romanchechyotkin/car_booking_service/internal/reservation/model"
-	res2 "github.com/romanchechyotkin/car_booking_service/internal/reservation/storage"
-	user3 "github.com/romanchechyotkin/car_booking_service/internal/user"
-	user2 "github.com/romanchechyotkin/car_booking_service/internal/user/model"
-	user "github.com/romanchechyotkin/car_booking_service/internal/user/storage"
-	"github.com/romanchechyotkin/car_booking_service/pkg/jwt"
-	"github.com/romanchechyotkin/car_booking_service/proto/pb"
+	"github.com/usamaroman/hackathon/internal/reservation"
+	"github.com/usamaroman/hackathon/internal/user"
+	"github.com/usamaroman/hackathon/pkg/jwt"
 )
 
 var (
@@ -45,21 +38,19 @@ const (
 )
 
 type handler struct {
-	carRepository   car2.Storage
-	imageRepository images_storage.ImageStorage
-	reservationRep  res2.Storage
+	carRepository   Storage
+	imageRepository ImageStorage
+	reservationRep  reservation.Storage
 	userRep         user.Storage
-	grpcClient      pb.CarsManagementClient
 	minioClient     *minio.Client
 }
 
-func NewHandler(carRep car2.Storage, imgRep images_storage.ImageStorage, resRep res2.Storage, up user.Storage, grpcClient pb.CarsManagementClient, minioClient *minio.Client) *handler {
+func NewHandler(carRep Storage, imgRep ImageStorage, resRep reservation.Storage, up user.Storage, minioClient *minio.Client) *handler {
 	return &handler{
 		carRepository:   carRep,
 		imageRepository: imgRep,
 		reservationRep:  resRep,
 		userRep:         up,
-		grpcClient:      grpcClient,
 		minioClient:     minioClient,
 	}
 }
@@ -74,24 +65,8 @@ func (h *handler) Register(router *gin.Engine) {
 	router.GET("/cars/:id/reservations", h.GetAllCarReservations)
 }
 
-// CreateCar godoc
-// @Tags cars
-// @Security BearerAuth
-// @Summary CreateCar
-// @Description Endpoint for creating car post
-// @Produce application/json
-// @ID image
-// @Accept multipart/form-data
-// @Param id formData string true "id"
-// @Param brand formData string true "brand"
-// @Param model formData string true "model"
-// @Param price formData float64 true "price"
-// @Param year formData int true "year"
-// @Param image formData file true "Image file"
-// @Success 201 {object} car.CreateCarFormDto{}
-// @Router /cars [post]
 func (h *handler) CreateCar(ctx *gin.Context) {
-	var formDto car.CreateCarFormDto
+	var formDto CreateCarFormDto
 
 	err := ctx.ShouldBind(&formDto)
 	if err != nil {
@@ -192,40 +167,15 @@ func (h *handler) CreateCar(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-
-	grpcReq := &pb.CreateCarDocReq{
-		CarId:       formDto.Id,
-		Brand:       formDto.Brand,
-		Model:       formDto.Model,
-		Year:        uint32(formDto.Year),
-		PricePerDay: float32(formDto.PricePerDay),
-		IsAvailable: false,
-		Rating:      0.0,
-		Username:    usr.FullName,
-		City:        usr.City,
-	}
-
-	res, err := h.grpcClient.CreateCarDoc(ctx, grpcReq)
-	if err != nil {
-		log.Println("GRPC ERROR", err)
-	}
-	log.Println("GRPC RESPONSE", res)
-
+	_ = usr
 	ctx.JSON(http.StatusCreated, formDto)
 }
 
-// GetAllCars godoc
-// @Tags cars
-// @Summary GetAllCars
-// @Description Endpoint for getting all cars posts
-// @Produce application/json
-// @Success 200 {object} []car.GetCarDto{}
-// @Router /cars [get]
 func (h *handler) GetAllCars(ctx *gin.Context) {
 	value := ctx.Query("sort")
 	log.Println(value)
 
-	var cars []car.GetCarDto
+	var cars []GetCarDto
 	var err error
 
 	switch value {
@@ -251,14 +201,6 @@ func (h *handler) GetAllCars(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, cars)
 }
 
-// GetCar godoc
-// @Tags cars
-// @Summary GetCar
-// @Description Endpoint for getting one car info by its id
-// @Produce application/json
-// @Param id path string true "Car ID"
-// @Success 200 {object} car.GetCarDto{}
-// @Router /cars/{id} [get]
 func (h *handler) GetCar(ctx *gin.Context) {
 	id := ctx.Param("id")
 
@@ -273,16 +215,6 @@ func (h *handler) GetCar(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, c)
 }
 
-// RentCar godoc
-// @Tags cars
-// @Security BearerAuth
-// @Summary RentCar
-// @Description Endpoint for renting cars
-// @Produce application/json
-// @Param id path string true "Car ID"
-// @Param body body reservation.TimeDto{} true "Times"
-// @Success 201 {object} car.CreateCarFormDto{}
-// @Router /cars/{id}/rent [post]
 func (h *handler) RentCar(ctx *gin.Context) {
 	carId := ctx.Param("id")
 
@@ -384,7 +316,7 @@ func (h *handler) RentCar(ctx *gin.Context) {
 	}
 
 	var rsv = reservation.Dto{
-		Car:        c,
+		//Car:        c,
 		CustomerId: fmt.Sprintf("%s", customerId),
 		CarOwnerId: carOwner,
 		StartDate:  rtd.StartDate,
@@ -400,13 +332,6 @@ func (h *handler) RentCar(ctx *gin.Context) {
 		return
 	}
 
-	// kafka DONT TOUCH
-	//marshal, _ := json.Marshal(&reservation)
-	//log.Printf("payload: %s goes to kafka", string(marshal))
-	//
-	//err = h.paymentPlacer.SendPayment(marshal)
-	//log.Println(err)
-
 	err = h.carRepository.ChangeIsAvailable(ctx, c.Id)
 	log.Printf("error due change availability %v", err)
 
@@ -415,16 +340,6 @@ func (h *handler) RentCar(ctx *gin.Context) {
 	})
 }
 
-// RateCar godoc
-// @Tags cars
-// @Security BearerAuth
-// @Summary RateCar
-// @Description Endpoint for rating cars
-// @Produce application/json
-// @Param id path string true "Car ID"
-// @Param body body user2.RateDto{} true "Rate"
-// @Success 201 {object} car.CreateCarFormDto{}
-// @Router /cars/{id}/rate [post]
 func (h *handler) RateCar(ctx *gin.Context) {
 	carId := ctx.Param("id")
 
@@ -445,28 +360,28 @@ func (h *handler) RateCar(ctx *gin.Context) {
 		return
 	}
 
-	var dto user2.RateDto
+	var dto user.RateDto
 	err = ctx.ShouldBindJSON(&dto)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = user3.ValidateRating(dto.Rating)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-
-	err = user3.ValidateCommentLength(dto.Comment)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+	//err = user.ValidateRating(dto.Rating)
+	//if err != nil {
+	//	ctx.JSON(http.StatusBadRequest, gin.H{
+	//		"error": err.Error(),
+	//	})
+	//	return
+	//}
+	//
+	//err = ValidateCommentLength(dto.Comment)
+	//if err != nil {
+	//	ctx.JSON(http.StatusBadRequest, gin.H{
+	//		"error": err.Error(),
+	//	})
+	//	return
+	//}
 
 	err = h.carRepository.CreateRating(ctx, dto, carId, usr.Id)
 	if err != nil {
@@ -499,8 +414,8 @@ func (h *handler) RateCar(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"car":  c,
-		"user": usr.FullName,
+		"car": c,
+		//"user": usr.FullName,
 	})
 }
 
