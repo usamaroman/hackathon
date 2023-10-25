@@ -32,7 +32,7 @@ services:
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "5432"
-      POSTGRES_DB: "betera"
+      POSTGRES_DB: "hackathon"
     volumes:
       - data:/var/lib/postgresql/data
     networks:
