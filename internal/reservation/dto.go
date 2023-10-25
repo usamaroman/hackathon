@@ -1,8 +1,9 @@
 package reservation
 
 import (
-	car "github.com/romanchechyotkin/car_booking_service/internal/car/model"
 	"time"
+
+	"github.com/usamaroman/hackathon/internal/car"
 )
 
 type TimeDto struct {
