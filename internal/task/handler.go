@@ -72,7 +72,7 @@ func (h *handler) createTask(ctx *gin.Context) {
 	err = h.storage.QueryRow(ctx,
 		`INSERT INTO tasks(title, description, difficulty, priority, status, start, "end")
 		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-		t.Title, t.Description, t.Difficulty, t.Priority, status_notStarted, t.Start, t.End).Scan(&insertedID)
+		t.Title, t.Description, t.Difficulty, t.Priority, StatusNotStarted, t.Start, t.End).Scan(&insertedID)
 	if err != nil {
 		log.Println("Error while writing to the database ", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
