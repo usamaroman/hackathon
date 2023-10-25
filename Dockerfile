@@ -8,11 +8,12 @@ ENV POSTGRES_HOST="" \
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
+RUN go mod tidy
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -o bin cmd/main/main.go
 
 FROM scratch
 WORKDIR /app
 COPY --from=builder /app/bin .
-EXPOSE PORT
+EXPOSE 8000
 CMD ["/app/bin"]

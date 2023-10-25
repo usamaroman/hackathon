@@ -33,7 +33,7 @@ export const Registration = () => {
 
     return (
         <div className={"registration"}>
-            <h1>registration form</h1>
+            <h1 style={{textAlign:"center"}}    >Регистрация</h1>
             <div className={"registration_form"}>
                 <input type="text" placeholder={"email"} value={email} onChange={event => setEmail(event.target.value)} />
                 <input type="text" placeholder={"password"} value={password} onChange={event => setPassword(event.target.value)} />
