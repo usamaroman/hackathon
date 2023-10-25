@@ -1,0 +1,53 @@
+/* styles.css */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 20px;
+  }
+  
+  .header-button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: inherit;
+    margin-left: 20px;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  
+  .header-button:hover {
+    color: #0056b3;
+  }
+  
+  .modal-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    max-width: 400px; /* Устанавливаем максимальную ширину модального окна */
+    margin: 0 auto; /* Центрируем модальное окно по горизонтали */
+  }
+  
+  .modal-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 16px;
+  }
+  
+  .modal-button:hover {
+    background-color: #0056b3;
+  }
+  
