@@ -26,8 +26,6 @@ func NewHandler(pool *pgxpool.Pool) *handler {
 func (h *handler) Register(router *gin.Engine) {
 	router.Handle(http.MethodPost, "/projects", jwt.Middleware(h.CreateProject))
 	router.Handle(http.MethodGet, "/projects", h.GetAllProjects)
-	//router.Handle(http.MethodGet, "/auth/logout", h.Logout)
-	//router.Handle(http.MethodPost, "/auth/refresh", h.RefreshToken)
 }
 
 func (h *handler) CreateProject(ctx *gin.Context) {
@@ -56,6 +54,7 @@ func (h *handler) CreateProject(ctx *gin.Context) {
 
 	startDate, err := time.Parse(DDMMYYYY, dto.Start)
 	if err != nil {
+		log.Println("time parsing")
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -64,6 +63,7 @@ func (h *handler) CreateProject(ctx *gin.Context) {
 
 	endDate, err := time.Parse(DDMMYYYY, dto.End)
 	if err != nil {
+		log.Println("time parsing")
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -98,7 +98,7 @@ func (h *handler) CreateProject(ctx *gin.Context) {
 }
 
 func (h *handler) GetAllProjects(ctx *gin.Context) {
-
+	//h.client.Exec(ctx)
 }
 
 //

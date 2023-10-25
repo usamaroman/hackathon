@@ -4,6 +4,7 @@ import { Login } from "../Login/Login";
 import { Registration } from "../Registration/Registration";
 import { NewProject } from "../NewProject/NewProject";
 import "./header.css";
+import { NewTask } from "../NewTask/NewTask";
 
 Modal.setAppElement("#root");
 
@@ -11,6 +12,7 @@ export const Header = () => {
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegistrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [isNewProjectModalOpen, setNewProjectModalOpen] = useState(false);
+  const [isNewTaskOpen, setNewTaskOpen] = useState(false);
 
   return (
     <div className="header">
@@ -33,6 +35,13 @@ export const Header = () => {
         >
           Создать проект
         </button>
+
+        <button
+          className="header-button"
+          onClick={() => setNewTaskOpen(true)}
+        >
+          Создать задание
+        </button>
       </div>
 
       <Modal
@@ -41,12 +50,7 @@ export const Header = () => {
         className="modal-container"
       >
         <Login />
-        <button
-          className="modal-button"
-          onClick={() => setLoginModalOpen(false)}
-        >
-          Закрыть
-        </button>
+
       </Modal>
 
       <Modal
@@ -55,12 +59,6 @@ export const Header = () => {
         className="modal-container"
       >
         <Registration />
-        <button
-          className="modal-button"
-          onClick={() => setRegistrationModalOpen(false)}
-        >
-          Закрыть
-        </button>
       </Modal>
 
       <Modal
@@ -69,12 +67,15 @@ export const Header = () => {
         className="modal-container"
       >
         <NewProject />
-        <button
-          className="modal-button"
-          onClick={() => setNewProjectModalOpen(false)}
-        >
-          Закрыть
-        </button>
+      </Modal>
+
+      <Modal
+        isOpen={isNewTaskOpen}
+        onRequestClose={() => setNewTaskOpen(false)}
+        className="modal-container"
+      >
+        <NewTask />
+
       </Modal>
     </div>
   );
