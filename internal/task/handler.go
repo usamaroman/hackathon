@@ -12,9 +12,9 @@ import (
 type priority string
 
 const (
-	priority_low  = "low"
-	priority_mid  = "mid"
-	priority_high = "high"
+	PriorityLow  = "low"
+	PriorityMid  = "mid"
+	PriorityHigh = "high"
 )
 
 // Status
