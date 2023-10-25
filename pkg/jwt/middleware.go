@@ -13,7 +13,7 @@ func Middleware(h gin.HandlerFunc) gin.HandlerFunc {
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "midlleware unauthorized",
+				"error": "middleware unauthorized",
 			})
 			return
 		}
@@ -21,14 +21,14 @@ func Middleware(h gin.HandlerFunc) gin.HandlerFunc {
 		headers := strings.Split(authHeader, " ")
 		if len(headers) != 2 {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "midlleware unauthorized",
+				"error": "middleware unauthorized",
 			})
 			return
 		}
 
 		if headers[0] != "Bearer" {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "midlleware unauthorized",
+				"error": "middleware unauthorized",
 			})
 			return
 		}
@@ -37,10 +37,12 @@ func Middleware(h gin.HandlerFunc) gin.HandlerFunc {
 		log.Println(token)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "midlleware unauthorized",
+				"error": "middleware unauthorized",
 			})
 			return
 		}
+
+		ctx.Set("token", token)
 		h(ctx)
 	}
 }
