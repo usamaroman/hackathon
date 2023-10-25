@@ -23,7 +23,19 @@ export const NewProject = () => {
     }
 
     async function createProject() {
-        const createProject = await axiosInstance.post("/projects", JSON.stringify({ name: name, description: description, start: formatDate(startDate), end: formatDate(endDate) }));
+        try {
+            const createProject = await axiosInstance.post("/projects", JSON.stringify(
+                { 
+                    "title": name, 
+                    "description": description, 
+                    "start": formatDate(startDate), 
+                    "end": formatDate(endDate) 
+                }
+            ))
+            console.log(createProject)
+        } catch(e) {
+            console.log(e)
+        }
     }
 
     
