@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/usamaroman/hackathon/internal/project"
-	"github.com/usamaroman/hackathon/internal/task"
 	"log"
 	"net/http"
 	"time"
@@ -12,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/usamaroman/hackathon/internal/auth"
+	"github.com/usamaroman/hackathon/internal/project"
+	"github.com/usamaroman/hackathon/internal/task"
 	"github.com/usamaroman/hackathon/internal/user"
 	"github.com/usamaroman/hackathon/pkg/client/postgresql"
 )
@@ -28,33 +28,24 @@ func main() {
 	//log.Println(client)
 
 	log.Println("postgresql config init")
-	//pgConfig := postgresql.NewPgConfig(
-	//	os.Getenv("POSTGRES_USER"),
-	//	os.Getenv("POSTGRES_PASSWORD"),
-	//	os.Getenv("POSTGRES_HOST"),
-	//	os.Getenv("POSTGRES_PASSWORD"),
-	//	os.Getenv("POSTGRES_DB"),
-	//)
-
 	pgConfig := postgresql.NewPgConfig(
-		"postgres",
-		"qwerty",
-		"localhost",
-		"32771",
-		"postgres",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB"),
 	)
 
 	pgClient := postgresql.NewClient(ctx, pgConfig)
-	_ = pgClient
 
 	userRepository := user.NewRepository(pgClient)
 
 	authService := auth.NewService(userRepository)
-	authH := auth.NewHandler(authService)
-	authH.Register(router)
+	authHandler := auth.NewHandler(authService)
+	authHandler.Register(router)
 
-	tasks := task.New(pgClient)
-	tasks.Register(router)
+	tasksHandler := task.New(pgClient)
+	tasksHandler.Register(router)
 
 	projectHandler := project.NewHandler(pgClient)
 	projectHandler.Register(router)
