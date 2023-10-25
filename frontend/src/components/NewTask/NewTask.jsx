@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from "axios";
-import "./newproject.css"
+import "./newtask.css"
 import { axiosInstance } from '../../axios/axios';
 
-export const NewProject = () => {
+export const NewTask = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
+    const [difficulty, setDifficulty] = useState("");
+    const [priority, setPriority] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
@@ -19,62 +21,58 @@ export const NewProject = () => {
         const formattedDay = day < 10 ? `0${day}` : day;
         const formattedMonth = month < 10 ? `0${month}` : month;
       
-        return `${formattedDay}.${formattedMonth}.${year}`;
+        return `${formattedDay}-${formattedMonth}-${year}`;
     }
 
-    async function createProject() {
-        try {
-            const createProject = await axiosInstance.post("/projects", JSON.stringify(
-                { 
-                    "title": name, 
-                    "description": description, 
-                    "start": formatDate(startDate), 
-                    "end": formatDate(endDate) 
-                }
-            ))
-            console.log(createProject)
-        } catch(e) {
-            console.log(e)
-        }
+    async function createTask() {
+        // const createProject = await axiosInstance.post("/task", { name: name, description: description, difficulty: difficulty, priority: priority, startDate: formatDate(startDate), endDate: formatDate(endDate) });
+        console.log({ name: name, description: description, difficulty: difficulty, priority: priority, start: formatDate(startDate), end: formatDate(endDate) })
     }
 
-    
-
-    return (
-        <div className="new-project-container">
+    return(
+        <div className="new-task-container">
             <input
-                className="new-project-input"
+                className="new-task-input"
                 type="text"
-                placeholder={"Название проекта"}
+                placeholder={"Название задания"}
                 value={name}
                 onChange={event => setName(event.target.value)}
             />
             <input
-                className="new-project-input"
+                className="new-task-input"
                 type="text"
-                placeholder={"Описание проекта"}
+                placeholder={"Описание задания"}
                 value={description}
                 onChange={event => setDescription(event.target.value)}
             />
             <input
-                className="new-project-input"
+                className="new-task-input"
+                type="number"
+                placeholder={"Приоритет задания"}
+                min={1}
+                max={100}
+                value={priority}
+                onChange={event => setPriority(event.target.value)}
+            />
+            <input
+                className="new-task-input"
                 type="date"
                 placeholder={"Дата начала"}
                 value={startDate}
                 onChange={event => setStartDate(event.target.value)}
             />
             <input
-                className="new-project-input"
+                className="new-task-input"
                 type="date"
                 placeholder={"Дата окончания"}
                 value={endDate}
                 onChange={event => setEndDate(event.target.value)}
             />
             <button
-                className="new-project-button"
-                onClick={createProject}
+                className="new-task-button"
+                onClick={createTask}
             >
-                Создать проект
+                Создать задание
             </button>
         </div>
     )

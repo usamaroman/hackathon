@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/usamaroman/hackathon/internal/project"
 	"log"
 	"net/http"
 	"os"
@@ -12,8 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/usamaroman/hackathon/internal/auth"
-	"github.com/usamaroman/hackathon/internal/user"
 	"github.com/usamaroman/hackathon/pkg/client/postgresql"
+	"github.com/usamaroman/hackathon/internal/project"
+	"github.com/usamaroman/hackathon/internal/user"
 )
 
 func main() {
@@ -28,6 +28,14 @@ func main() {
 	//log.Println(client)
 
 	log.Println("postgresql config init")
+	// pgConfig := postgresql.NewPgConfig(
+	// 	os.Getenv("POSTGRES_USER"),
+	// 	os.Getenv("POSTGRES_PASSWORD"),
+	// 	os.Getenv("POSTGRES_HOST"),
+	// 	os.Getenv("POSTGRES_PASSWORD"),
+	// 	os.Getenv("POSTGRES_DB"),
+	// )
+
 	pgConfig := postgresql.NewPgConfig(
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),

@@ -8,12 +8,15 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: center; /* Центрирование по горизонтали */
+    justify-content: center; /* Центрирование по вертикали */
 }
+
 
 .registration_form input {
     width: 250px;
 }
 
 .registration button {
-    width: 125px;
+    width: 150px;
 }

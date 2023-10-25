@@ -6,6 +6,7 @@ import { NewProject } from './components/NewProject/NewProject';
 import { Header } from './components/Header/Header';
 
 function App() {
+  // const isAuth = useSelector((state) => state.user.isAuth)
   return (
     <div>
       <Header/>

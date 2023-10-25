@@ -1,18 +1,18 @@
-.new-project-container {
+.new-task-container {
     display: flex;
     flex-direction: column;
     width: 300px;
     margin: 0 auto;
   }
   
-  .new-project-input {
+  .new-task-input {
     margin: 8px 0;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
   }
   
-  .new-project-button {
+  .new-task-button {
     background-color: #007BFF;
     color: white;
     border: none;
@@ -22,7 +22,6 @@
     font-size: 16px;
   }
   
-  .new-project-button:hover {
+  .new-task-button:hover {
     background-color: #0056b3;
   }
-  
