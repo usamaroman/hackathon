@@ -17,7 +17,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: role; Type: TYPE; Schema: public; Owner: chechyotka
+-- Name: role; Type: TYPE; Schema: public; Owner: postgres
 --
 
 CREATE TYPE public.role AS ENUM (
@@ -26,14 +26,14 @@ CREATE TYPE public.role AS ENUM (
 );
 
 
-ALTER TYPE public.role OWNER TO chechyotka;
+ALTER TYPE public.role OWNER TO postgres;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: projects; Type: TABLE; Schema: public; Owner: chechyotka
+-- Name: projects; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.projects (
@@ -45,10 +45,10 @@ CREATE TABLE public.projects (
 );
 
 
-ALTER TABLE public.projects OWNER TO chechyotka;
+ALTER TABLE public.projects OWNER TO postgres;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: chechyotka
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.users (
@@ -59,10 +59,10 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO chechyotka;
+ALTER TABLE public.users OWNER TO postgres;
 
 --
--- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: chechyotka
+-- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.projects (id, title, description, start, "end") FROM stdin;
@@ -71,7 +71,7 @@ COPY public.projects (id, title, description, start, "end") FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: chechyotka
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.users (id, email, password, role) FROM stdin;
@@ -80,7 +80,7 @@ be19d517-7011-42df-aba7-9f4435c80aee	a@gmail.com	$2a$10$4H99fEJ/mA70K3cynLQ8/e6g
 
 
 --
--- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.projects
@@ -88,7 +88,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users
@@ -96,7 +96,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users
