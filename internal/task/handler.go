@@ -21,10 +21,10 @@ const (
 type status string
 
 const (
-	status_notStarted = "notStarted"
-	status_inProcess  = "inProcess"
-	status_completed  = "completed"
-	status_postponed  = "postponed"
+	StatusNotStarted = "notStarted"
+	StatusInProcess  = "inProcess"
+	StatusCompleted  = "completed"
+	StatusPostponed  = "postponed"
 )
 
 type task struct {
