@@ -1,12 +1,12 @@
 package postgresql
 
 import (
-	"fmt"
-	"github.com/jackc/pgx/v5/pgxpool"
-
 	"context"
+	"fmt"
 	"log"
 	"strings"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type pgConfig struct {

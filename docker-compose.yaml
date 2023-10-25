@@ -25,14 +25,14 @@ services:
     container_name: postgres
     build:
       dockerfile: Dockerfile
-      context: ./pkg/postgresql
+      context: ./pkg/client/postgresql
     restart: always
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "5432"
-      POSTGRES_DB: "betera"
+      POSTGRES_DB: "hackathon"
     volumes:
       - data:/var/lib/postgresql/data
     networks:
@@ -61,8 +61,17 @@ services:
     networks:
       - app-network
     ports:
-      - "8080:8080"
+      - "8000:8000"
 
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    networks:
+      - app-network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
 
 networks:
   app-network:

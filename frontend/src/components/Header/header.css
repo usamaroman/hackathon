@@ -25,15 +25,23 @@
     color: #0056b3;
   }
   
-  .modal-container {
+/* styles.css */
+
+.modal-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center; /* Выравнивание по вертикали и горизонтали */
     padding: 20px;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     border-radius: 8px;
-    max-width: 400px; /* Устанавливаем максимальную ширину модального окна */
-    margin: 0 auto; /* Центрируем модальное окно по горизонтали */
+    max-width: 400px;
+    margin: 0 auto;
+    width: 80%; /* Пример установки ширины */
+    position: fixed; /* Фиксированная позиция */
+    top: 50%; /* Положение сверху - 50% от верха */
+    left: 50%; /* Положение слева - 50% от лева */
+    transform: translate(-50%, -50%); /* Центрирование относительно середины окна */
   }
   
   .modal-button {
