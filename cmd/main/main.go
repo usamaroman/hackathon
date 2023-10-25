@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/usamaroman/hackathon/internal/project"
+	"github.com/usamaroman/hackathon/internal/task"
 	"log"
 	"net/http"
 	"time"
@@ -36,11 +37,11 @@ func main() {
 	//)
 
 	pgConfig := postgresql.NewPgConfig(
-		"chechyotka",
-		"5432",
+		"postgres",
+		"qwerty",
 		"localhost",
-		"5432",
-		"hackathon",
+		"32771",
+		"postgres",
 	)
 
 	pgClient := postgresql.NewClient(ctx, pgConfig)
@@ -51,6 +52,9 @@ func main() {
 	authService := auth.NewService(userRepository)
 	authH := auth.NewHandler(authService)
 	authH.Register(router)
+
+	tasks := task.New(pgClient)
+	tasks.Register(router)
 
 	projectHandler := project.NewHandler(pgClient)
 	projectHandler.Register(router)
