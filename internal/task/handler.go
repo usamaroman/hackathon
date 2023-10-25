@@ -104,7 +104,7 @@ func (h *handler) taskDone(ctx *gin.Context) {
 		`UPDATE tasks
 			SET status = $1
 			WHERE id = $2`,
-		status_completed, id)
+		StatusCompleted, id)
 	if err != nil {
 		log.Println("Error while writing to the database ", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
