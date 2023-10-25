@@ -3,7 +3,8 @@ import "./login.css"
 import {useNavigate} from "react-router-dom";
 import {userActions} from "../../userState/loginUserSlice"
 import {useDispatch} from "react-redux";
-import axios, {} from "axios"
+import { axiosInstance } from '../../axios/axios';
+
 
 export const Login = () => {
     const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export const Login = () => {
 
     const login = async () => {
         try {
-            const res = await axios.post("http://localhost:8000/auth/login", JSON.stringify(
+            const res = await axiosInstance.post("/auth/login", JSON.stringify(
                 {
                     "email": email,
                     "password": password,

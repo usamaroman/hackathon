@@ -1,12 +1,7 @@
 import React, {useState} from 'react';
 import "./registration.css"
 import {useNavigate} from "react-router-dom";
-
-// "city": "string",
-// "email": "string",
-// "full_name": "string",
-// "password": "string",
-// "telephone_number": "string"
+import { axiosInstance } from '../../axios/axios';
 
 export const Registration = () => {
     const [email, setEmail] = useState("");
@@ -16,12 +11,11 @@ export const Registration = () => {
 
     const registration = async () => {
         try {
-            // await axiosInstance.post("/auth/registration", JSON.stringify(
-            const res = {
+            const res = await axiosInstance.post("/auth/registration", JSON.stringify({
                     "email": email,
                     "password": password,
                 }
-            
+            ))
 
             console.log(res)
 
@@ -33,11 +27,11 @@ export const Registration = () => {
 
     return (
         <div className={"registration"}>
-            <h1 style={{textAlign:"center"}}    >Регистрация</h1>
+            <h1 style={{ textAlign: "center" }}>Регистрация</h1>
             <div className={"registration_form"}>
                 <input type="text" placeholder={"email"} value={email} onChange={event => setEmail(event.target.value)} />
                 <input type="text" placeholder={"password"} value={password} onChange={event => setPassword(event.target.value)} />
-                <button onClick={registration}>ok</button>
+                <button onClick={registration}>Зарегистрироваться</button>
             </div>
         </div>
     )
