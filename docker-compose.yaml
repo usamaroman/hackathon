@@ -63,6 +63,16 @@ services:
     ports:
       - "8000:8000"
 
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    networks:
+      - app-network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
 networks:
   app-network:
     driver: bridge
