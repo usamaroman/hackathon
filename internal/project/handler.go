@@ -98,7 +98,7 @@ func (h *handler) CreateProject(ctx *gin.Context) {
 }
 
 func (h *handler) GetAllProjects(ctx *gin.Context) {
-
+	//h.client.Exec(ctx)
 }
 
 //
