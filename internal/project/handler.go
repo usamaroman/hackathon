@@ -26,6 +26,7 @@ func NewHandler(pool *pgxpool.Pool) *handler {
 func (h *handler) Register(router *gin.Engine) {
 	router.Handle(http.MethodPost, "/projects", jwt.Middleware(h.CreateProject))
 	router.Handle(http.MethodGet, "/projects", h.GetAllProjects)
+	router.Handle(http.MethodPost, "/projects/taskToProj", h.taskToProject)
 }
 
 func (h *handler) CreateProject(ctx *gin.Context) {
@@ -99,6 +100,20 @@ func (h *handler) CreateProject(ctx *gin.Context) {
 
 func (h *handler) GetAllProjects(ctx *gin.Context) {
 	//h.client.Exec(ctx)
+}
+
+func (h *handler) taskToProject(ctx *gin.Context) {
+	taskID := ctx.Query("taskID")
+	projID := ctx.Query("projID")
+
+	_, err := h.client.Exec(ctx, "INSERT INTO project_task (project_id, task_id) VALUES($1, $2)", projID, taskID)
+	if err != nil {
+		log.Println("Error while adding task to project ", err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Задача добавлена в проект"})
 }
 
 //

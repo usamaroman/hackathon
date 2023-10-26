@@ -30,6 +30,14 @@ func main() {
 
 	log.Println("postgresql config init")
 
+	pgConfig := postgresql.NewPgConfig(
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DB"),
+	)
+
 	//pgConfig := postgresql.NewPgConfig(
 	//	os.Getenv("POSTGRES_USER"),
 	//	os.Getenv("POSTGRES_PASSWORD"),
@@ -38,13 +46,13 @@ func main() {
 	//	os.Getenv("POSTGRES_DB"),
 	//)
 
-	pgConfig := postgresql.NewPgConfig(
-		"postgres",
-		"qwerty",
-		"localhost",
-		"32771",
-		"postgres",
-	)
+// 	pgConfig := postgresql.NewPgConfig(
+// 		"postgres",
+// 		"qwerty",
+// 		"localhost",
+// 		"32771",
+// 		"postgres",
+// 	)
 
 	pgClient := postgresql.NewClient(ctx, pgConfig)
 

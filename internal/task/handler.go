@@ -54,8 +54,9 @@ func (h *handler) Register(ctx *gin.Engine) {
 	{
 		task.GET("/", h.getAllTasks) // TODO JWT
 		task.POST("/create", h.createTask)
-		task.POST("/done/:id", h.taskDone)
+		task.PATCH("/done/:id", h.taskDone)
 		task.DELETE("/:id", h.deleteTask)
+		task.POST("/taskToProj", h.taskToProject)
 	}
 }
 
@@ -91,8 +92,9 @@ func (h *handler) getAllTasks(ctx *gin.Context) {
 		log.Println("Error while marshaling tasks to JSON", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+    
 	}
-	log.Println(jsonData)
+
 	ctx.Data(http.StatusOK, "application/json", jsonData)
 }
 
@@ -152,4 +154,18 @@ func (h *handler) taskDone(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Задача выполнена"})
+}
+
+func (h *handler) taskToProject(ctx *gin.Context) {
+	taskID := ctx.Query("taskID")
+	projID := ctx.Query("projID")
+
+	_, err := h.storage.Exec(ctx, "INSERT INTO project_task (project_id, task_id) VALUES($1, $2)", projID, taskID)
+	if err != nil {
+		log.Println("Error while adding task to project ", err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Задача добавлена в проект"})
 }
