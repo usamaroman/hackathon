@@ -1,44 +1,45 @@
 package task
 
 import (
-	"encoding/json"
+	"github.com/gin-gonic/gin"
+	jwt2 "github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/usamaroman/hackathon/pkg/jwt"
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Priority
 type priority string
 
+const DDMMYYYY = "02.01.2006"
+
 const (
-	PriorityLow  = "low"
-	PriorityMid  = "mid"
-	PriorityHigh = "high"
+	PriorityLow  = "низкий"
+	PriorityMid  = "средний"
+	PriorityHigh = "высокий"
 )
 
 // Status
 type status string
 
 const (
-	StatusNotStarted = "notStarted"
-	StatusInProcess  = "inProcess"
-	StatusCompleted  = "completed"
-	StatusPostponed  = "postponed"
+	StatusNotStarted = "надо сделать"
+	StatusInProcess  = "в процессе"
+	StatusCompleted  = "выполнено"
 )
 
-type task struct {
-	Id          int    `json:"id"`
-	Title       string `json:"title" required:"true"`
-	Description string `json:"description"`
-	//Comment     string    `json:"comment"`
-	Difficulty int       `json:"difficulty"`
-	Priority   priority  `json:"priority"`
-	Status     status    `json:"status"`
-	Start      time.Time `json:"start" `
-	End        time.Time `json:"end"`
+type Task struct {
+	Id          string   `json:"id"`
+	Title       string   `json:"title" required:"true"`
+	Description string   `json:"description"`
+	Difficulty  int      `json:"difficulty"`
+	Priority    priority `json:"priority"`
+	Status      status   `json:"status"`
+	Start       string   `json:"start" `
+	End         string   `json:"end"`
 }
 
 type handler struct {
@@ -52,8 +53,8 @@ func New(storage *pgxpool.Pool) *handler {
 func (h *handler) Register(ctx *gin.Engine) {
 	task := ctx.Group("/tasks")
 	{
-		task.GET("/", h.getAllTasks) // TODO JWT
-		task.POST("/create", h.createTask)
+		task.GET("/", jwt.Middleware(h.getAllTasks))
+		task.POST("/", jwt.Middleware(h.createTask))
 		task.PATCH("/done/:id", h.taskDone)
 		task.DELETE("/:id", h.deleteTask)
 		task.POST("/taskToProj", h.taskToProject)
@@ -61,24 +62,44 @@ func (h *handler) Register(ctx *gin.Engine) {
 }
 
 func (h *handler) getAllTasks(ctx *gin.Context) {
-	rows, err := h.storage.Query(ctx, "SELECT * FROM tasks")
+	value, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	token, ok := value.(jwt2.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	role := token["role"]
+	log.Println(role)
+
+	rows, err := h.storage.Query(ctx, `SELECT id, title, description, start, "end", difficulty, priority, status FROM tasks`)
 	if err != nil {
 		log.Println("Error while querying tasks", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var tasks []task
+	var res []*Task
 
 	for rows.Next() {
-		var t task
-		err := rows.Scan(&t.Id, &t.Title, &t.Description, &t.Difficulty, &t.Priority, &t.Status, &t.Start, &t.End)
+		var t Task
+		var start time.Time
+		var end time.Time
+
+		err := rows.Scan(&t.Id, &t.Title, &t.Description, &start, &end, &t.Difficulty, &t.Priority, &t.Status)
 		if err != nil {
 			log.Println("Error while scanning task row", err)
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		tasks = append(tasks, t)
+
+		t.Start = start.Format(DDMMYYYY)
+		t.End = end.Format(DDMMYYYY)
+
+		res = append(res, &t)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -87,19 +108,24 @@ func (h *handler) getAllTasks(ctx *gin.Context) {
 		return
 	}
 
-	jsonData, err := json.Marshal(tasks)
-	if err != nil {
-		log.Println("Error while marshaling tasks to JSON", err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-    
-	}
-
-	ctx.Data(http.StatusOK, "application/json", jsonData)
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (h *handler) createTask(ctx *gin.Context) {
-	var t task
+	value, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	token, ok := value.(jwt2.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	role := token["role"]
+	log.Println(role)
+
+	var t Task
 	err := ctx.ShouldBindJSON(&t)
 	if err != nil {
 		log.Println("Error while serializing JSON ", err)
@@ -107,21 +133,43 @@ func (h *handler) createTask(ctx *gin.Context) {
 		return
 	}
 
-	// Валидация: верю Роберту
+	startDate, err := time.Parse(DDMMYYYY, t.Start)
+	if err != nil {
+		log.Println("time parsing")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	// Выполнение SQL-запроса
-	var insertedID int
-	err = h.storage.QueryRow(ctx,
-		`INSERT INTO tasks(title, description, difficulty, priority, status, start, "end")
-		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-		t.Title, t.Description, t.Difficulty, t.Priority, StatusNotStarted, t.Start, t.End).Scan(&insertedID)
+	endDate, err := time.Parse(DDMMYYYY, t.End)
+	if err != nil {
+		log.Println("time parsing")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	now := time.Now()
+	if startDate.Before(now) {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "u wanna to rent car in the past",
+		})
+		return
+	}
+
+	_, err = h.storage.Exec(ctx,
+		`INSERT INTO tasks (id, title, description, start, "end", difficulty, priority, status)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+		uuid.New().String(), t.Title, t.Description, startDate, endDate, t.Difficulty, t.Priority, StatusNotStarted)
 	if err != nil {
 		log.Println("Error while writing to the database ", err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"id": insertedID, "message": "Задача создана"})
+	ctx.JSON(http.StatusCreated, gin.H{"message": "Задача создана"})
 }
 
 func (h *handler) deleteTask(ctx *gin.Context) {

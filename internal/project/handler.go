@@ -1,14 +1,17 @@
 package project
 
 import (
-	"github.com/gin-gonic/gin"
-	jwt2 "github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/usamaroman/hackathon/pkg/jwt"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	jwt2 "github.com/golang-jwt/jwt/v5"
+	"github.com/usamaroman/hackathon/internal/task"
+	"github.com/usamaroman/hackathon/pkg/jwt"
 )
 
 const DDMMYYYY = "02.01.2006"
@@ -26,11 +29,11 @@ func NewHandler(pool *pgxpool.Pool) *handler {
 func (h *handler) Register(router *gin.Engine) {
 	router.Handle(http.MethodPost, "/projects", jwt.Middleware(h.CreateProject))
 	router.Handle(http.MethodGet, "/projects", h.GetAllProjects)
-	router.Handle(http.MethodPost, "/projects/taskToProj", h.taskToProject)
+	router.Handle(http.MethodPost, "/projects/:project_id/tasks/:task_id", h.linkTask)
+	router.Handle(http.MethodGet, "/projects/:id/tasks", h.getAllProjectTasks)
 }
 
 func (h *handler) CreateProject(ctx *gin.Context) {
-
 	value, exists := ctx.Get("token")
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, "не авторизован")
@@ -99,14 +102,44 @@ func (h *handler) CreateProject(ctx *gin.Context) {
 }
 
 func (h *handler) GetAllProjects(ctx *gin.Context) {
-	//h.client.Exec(ctx)
+	query := `
+		SELECT id, title, description, start, "end" FROM projects
+	`
+
+	rows, err := h.client.Query(ctx, query)
+	if err != nil {
+		return
+	}
+
+	var res []*Project
+
+	for rows.Next() {
+		var dto Project
+		var start time.Time
+		var end time.Time
+
+		err := rows.Scan(&dto.Id, &dto.Title, &dto.Description, &start, &end)
+		if err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		dto.Start = start.Format("02.01.2006")
+		dto.End = end.Format("02.01.2006")
+
+		res = append(res, &dto)
+	}
+
+	ctx.JSON(http.StatusOK, res)
 }
 
-func (h *handler) taskToProject(ctx *gin.Context) {
-	taskID := ctx.Query("taskID")
-	projID := ctx.Query("projID")
+func (h *handler) linkTask(ctx *gin.Context) {
+	projectID := ctx.Param("project_id")
+	taskID := ctx.Param("task_id")
+	log.Println(projectID, taskID)
 
-	_, err := h.client.Exec(ctx, "INSERT INTO project_task (project_id, task_id) VALUES($1, $2)", projID, taskID)
+	_, err := h.client.Exec(ctx, "INSERT INTO projects_tasks (project_id, task_id) VALUES($1, $2)", projectID, taskID)
 	if err != nil {
 		log.Println("Error while adding task to project ", err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -116,7 +149,48 @@ func (h *handler) taskToProject(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Задача добавлена в проект"})
 }
 
-//
+func (h *handler) getAllProjectTasks(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var res []*task.Task
+	log.Println(id)
+
+	query := `
+		SELECT id, title, description, start, "end", difficulty, priority, status
+		FROM tasks 
+		WHERE id in (
+		    SELECT task_id FROM projects_tasks WHERE project_id = $1
+		)
+	`
+
+	rows, err := h.client.Query(ctx, query, id)
+	if err != nil {
+		log.Println("Error while adding task to project ", err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	for rows.Next() {
+		var dto task.Task
+		var start time.Time
+		var end time.Time
+
+		err := rows.Scan(&dto.Id, &dto.Title, &dto.Description, &start, &end, &dto.Difficulty, &dto.Priority, &dto.Start)
+		if err != nil {
+			log.Println(err)
+			ctx.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		dto.Start = start.Format(DDMMYYYY)
+		dto.End = end.Format(DDMMYYYY)
+
+		res = append(res, &dto)
+		log.Println(res)
+	}
+
+	ctx.JSON(http.StatusOK, res)
+}
+
 //func (h *handler) Registration(ctx *gin.Context) {
 //	var body CreateProjectDto
 //	err := ctx.ShouldBindJSON(&body)
