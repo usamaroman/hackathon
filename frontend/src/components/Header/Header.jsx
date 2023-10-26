@@ -7,6 +7,7 @@ import "./header.css";
 import { NewTask } from "../NewTask/NewTask";
 import {useDispatch, useSelector} from "react-redux";
 import { userActions } from "../../userState/loginUserSlice";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 
 Modal.setAppElement("#root");
 
