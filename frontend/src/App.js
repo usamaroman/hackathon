@@ -6,6 +6,7 @@ import react, { useEffect } from 'react';
 import { userActions } from './userState/loginUserSlice';
 import { Registration } from './components/Registration/Registration';
 import { Login } from './components/Login/Login';
+import { Home } from './components/Home/Home';
 
 
 
@@ -30,15 +31,17 @@ function App() {
     <BrowserRouter>
       <Routes>
         {role !== "admin" && <>
-          <Route path="/" element={isAuth ? <Navigate to={"/"}/> : <Navigate to={"/login"} />}/>
-          <Route path={"/login"} element={isAuth ? <Navigate to={"/"} /> : <Login />} />
-          <Route path={"/registration"} element={isAuth ? <Navigate to={"/"} /> : <Registration />} />
+          <Route path="/" element={isAuth ? <Navigate to={"/home"}/> : <Navigate to={"/login"} />}/>
+          <Route path={"/login"} element={isAuth ? <Navigate to={"/home"} /> : <Login />} />
+          <Route path={"/registration"} element={isAuth ? <Navigate to={"/home"} /> : <Registration />} />
+          <Route path={"/home"} element={isAuth ? <Home/> : <Navigate to={"/login"}/>} />
         </>
         }
         {role == "admin" && <>
-          <Route path="/" element={isAuth ? <Navigate to={"/"}/> : <Navigate to={"/login"} />}/>
-          <Route path={"/login"} element={isAuth ? <Navigate to={"/"} /> : <Login />} />
-          <Route path={"/registration"} element={isAuth ? <Navigate to={"/"} /> : <Registration />} />
+          <Route path="/" element={isAuth ? <Navigate to={"/home"}/> : <Navigate to={"/login"} />}/>
+          <Route path={"/login"} element={isAuth ? <Navigate to={"/home"} /> : <Login />} />
+          <Route path={"/registration"} element={isAuth ? <Navigate to={"/home"} /> : <Registration />} />
+          <Route path={"/home"} element={isAuth ? <Home/> : <Navigate to={"/login"}/>} />
         </>
         }
       </Routes>

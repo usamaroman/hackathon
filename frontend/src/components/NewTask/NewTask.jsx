@@ -42,7 +42,7 @@ export const NewTask = () => {
         start: formatDate(startDate),
         end: formatDate(endDate),
       })
-    const createProject = await axiosInstance.post("/task/create", {
+    const createProject = await axiosInstance.post("/tasks/create", {
       "title": name,
       "description": description,
       "difficulty": difficulty,
