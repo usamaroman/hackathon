@@ -28,9 +28,9 @@ func NewHandler(pool *pgxpool.Pool) *handler {
 
 func (h *handler) Register(router *gin.Engine) {
 	router.Handle(http.MethodPost, "/projects", jwt.Middleware(h.CreateProject))
-	router.Handle(http.MethodGet, "/projects", h.GetAllProjects)
-	router.Handle(http.MethodPost, "/projects/:project_id/tasks/:task_id", h.linkTask)
-	router.Handle(http.MethodGet, "/projects/:id/tasks", h.getAllProjectTasks)
+	router.Handle(http.MethodGet, "/projects", jwt.Middleware(h.GetAllProjects))
+	router.Handle(http.MethodPost, "/projects/:project_id/tasks/:task_id", jwt.Middleware(h.linkTask))
+	router.Handle(http.MethodGet, "/projects/:id/tasks", jwt.Middleware(h.getAllProjectTasks))
 }
 
 func (h *handler) CreateProject(ctx *gin.Context) {

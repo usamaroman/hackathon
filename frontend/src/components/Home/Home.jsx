@@ -2,9 +2,16 @@ import react from "react";
 import { Header } from "../Header/Header";
 import "./home.css";
 import { Link, useNavigate } from "react-router-dom";
+import { GetProjects } from "../GetProjects/GetProjects";
 
 export const Home = () => {
   const navigate = useNavigate();
+
+  function logout(){
+    console.log("here")
+    localStorage.clear()
+    navigate("/")
+  }
 
   return (
     <div className="main">
@@ -16,16 +23,17 @@ export const Home = () => {
         <div className="menu">
           <ul>
             <li>
-              <Link to="/registration">Проекты</Link>
+              <Link to="/projects">Проекты</Link>
             </li>
             <li>
               <Link to="/registration">Задачи</Link>
             </li>
             <li>
-              <a href="#">Выйти</a>
+              <a onClick={logout}>Выйти</a>
             </li>
           </ul>
         </div>
+        {/* <GetProjects /> */}
       </div>
     </div>
   );
