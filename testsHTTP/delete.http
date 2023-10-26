@@ -1,0 +1,2 @@
+DELETE localhost:8000/tasks/delete/1
+Content-Type: application/json
