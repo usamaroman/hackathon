@@ -30,6 +30,7 @@ export const NewTask = () => {
     }
 
     return(
+
         <div className="new-task-container">
             <input
                 className="new-task-input"
