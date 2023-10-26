@@ -29,6 +29,7 @@ func NewHandler(pool *pgxpool.Pool) *handler {
 func (h *handler) Register(router *gin.Engine) {
 	router.Handle(http.MethodPost, "/projects", jwt.Middleware(h.CreateProject))
 	router.Handle(http.MethodGet, "/projects", jwt.Middleware(h.GetAllProjects))
+	router.Handle(http.MethodGet, "/projects/:id", jwt.Middleware(h.GetProject))
 	router.Handle(http.MethodPost, "/projects/:project_id/tasks/:task_id", jwt.Middleware(h.linkTask))
 	router.Handle(http.MethodGet, "/projects/:id/tasks", jwt.Middleware(h.getAllProjectTasks))
 }
@@ -102,6 +103,19 @@ func (h *handler) CreateProject(ctx *gin.Context) {
 }
 
 func (h *handler) GetAllProjects(ctx *gin.Context) {
+	value, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	token, ok := value.(jwt2.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	role := token["role"]
+	log.Println(role)
+
 	query := `
 		SELECT id, title, description, start, "end" FROM projects
 	`
@@ -135,6 +149,19 @@ func (h *handler) GetAllProjects(ctx *gin.Context) {
 }
 
 func (h *handler) linkTask(ctx *gin.Context) {
+	value, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	token, ok := value.(jwt2.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	role := token["role"]
+	log.Println(role)
+
 	projectID := ctx.Param("project_id")
 	taskID := ctx.Param("task_id")
 	log.Println(projectID, taskID)
@@ -150,6 +177,19 @@ func (h *handler) linkTask(ctx *gin.Context) {
 }
 
 func (h *handler) getAllProjectTasks(ctx *gin.Context) {
+	value, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	token, ok := value.(jwt2.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	role := token["role"]
+	log.Println(role)
+
 	id := ctx.Param("id")
 	var res []*task.Task
 	log.Println(id)
@@ -191,142 +231,37 @@ func (h *handler) getAllProjectTasks(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
-//func (h *handler) Registration(ctx *gin.Context) {
-//	var body CreateProjectDto
-//	err := ctx.ShouldBindJSON(&body)
-//	if err != nil {
-//		log.Println("error during binding json", err)
-//		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-//	err = ValidateForEmptyPassword(body.Password)
-//	if err != nil {
-//		log.Println("error during validating password and full name", err)
-//		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-//	err = h.service.Registration(ctx, body)
-//	if err != nil {
-//		log.Println("error during registration process", err)
-//		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-//	ctx.JSON(http.StatusCreated, gin.H{"message": "успешная регистрация"})
-//}
-//
-//func (h *handler) Login(ctx *gin.Context) {
-//	var body LoginDto
-//	err := ctx.ShouldBindJSON(&body)
-//	if err != nil {
-//		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("wrong entered data").Error()})
-//		return
-//	}
-//
-//	user, token, err := h.service.Login(ctx, body)
-//	if err != nil {
-//		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-//	var res LoginResDto
-//	res.User = user
-//	res.AccessToken = token
-//
-//	refreshToken, err := jwt.GenerateRefreshToken(user.Id)
-//	if err != nil {
-//		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "server error"})
-//		return
-//	}
-//
-//	res.RefreshToken = refreshToken
-//
-//	ctx.JSON(http.StatusOK, res)
-//}
-//
-//func (h *handler) RefreshToken(ctx *gin.Context) {
-//	var reqDto struct {
-//		RefreshToken string `json:"refresh_token"`
-//	}
-//
-//	err := ctx.ShouldBindJSON(&reqDto)
-//	if err != nil {
-//		log.Println(err)
-//		ctx.JSON(http.StatusUnauthorized, gin.H{
-//			"error": "не авторизован",
-//		})
-//		return
-//	}
-//	log.Println(reqDto)
-//
-//	if reqDto.RefreshToken == "" {
-//		fmt.Println("empty")
-//		ctx.JSON(http.StatusUnauthorized, gin.H{
-//			"error": "не авторизован",
-//		})
-//		return
-//	}
-//
-//	token, err := jwt.ParseRefreshTokenToken(reqDto.RefreshToken)
-//	if err != nil {
-//		fmt.Println("hz")
-//		ctx.JSON(http.StatusUnauthorized, gin.H{
-//			"error": "не авторизован",
-//		})
-//		return
-//	}
-//
-//	id := token["id"]
-//	if err != nil {
-//		ctx.JSON(http.StatusInternalServerError, gin.H{
-//			"error": "server error",
-//		})
-//		return
-//	}
-//
-//	u, err := h.service.repository.GetOneUserById(ctx, fmt.Sprintf("%s", id))
-//	if err != nil {
-//		ctx.JSON(http.StatusInternalServerError, gin.H{
-//			"error": "server error",
-//		})
-//		return
-//	}
-//
-//	role, err := h.service.repository.GetRole(ctx, u.Id)
-//	if err != nil {
-//		ctx.JSON(http.StatusInternalServerError, gin.H{
-//			"error": "server error",
-//		})
-//		return
-//	}
-//
-//	generateAccessToken, err := jwt.GenerateAccessToken(u.Id, u.Email, role)
-//	if err != nil {
-//		ctx.JSON(http.StatusInternalServerError, gin.H{
-//			"error": "server error",
-//		})
-//		return
-//	}
-//
-//	generateRefreshToken, err := jwt.GenerateRefreshToken(u.Id)
-//	if err != nil {
-//		ctx.JSON(http.StatusInternalServerError, gin.H{
-//			"error": "server error",
-//		})
-//		return
-//	}
-//
-//	ctx.JSON(http.StatusOK, gin.H{
-//		"access_token":  generateAccessToken,
-//		"refresh_token": generateRefreshToken,
-//	})
-//}
-//
-//func (h *handler) Logout(ctx *gin.Context) {
-//	ctx.SetCookie("access_token", "", -1, "/", "127.0.01", false, false)
-//	ctx.JSON(http.StatusOK, gin.H{
-//		"message": "log out",
-//	})
-//}
+func (h *handler) GetProject(ctx *gin.Context) {
+	value, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	token, ok := value.(jwt2.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	role := token["role"]
+	log.Println(role)
+
+	id := ctx.Param("id")
+	var project Project
+	var start time.Time
+	var end time.Time
+
+	query := `
+		SELECT id, title, description, start, "end" FROM projects WHERE id = $1
+	`
+
+	err := h.client.QueryRow(ctx, query, id).Scan(&project.Id, &project.Title, &project.Description, &start, &end)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	project.Start = start.Format(DDMMYYYY)
+	project.End = end.Format(DDMMYYYY)
+
+	ctx.JSON(http.StatusOK, project)
+}

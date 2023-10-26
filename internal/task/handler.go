@@ -54,17 +54,15 @@ func New(storage *pgxpool.Pool) *handler {
 	return &handler{storage}
 }
 
-func (h *handler) Register(ctx *gin.Engine) {
-	task := ctx.Group("/tasks")
-	{
-		task.GET("/", jwt.Middleware(h.getAllTasks))
-		task.POST("/", jwt.Middleware(h.createTask))
-		task.PATCH("/done/:id", jwt.Middleware(h.taskDone))
-		task.DELETE("/:id", jwt.Middleware(h.deleteTask))
-		task.POST("/:id/projects/:projectId", jwt.Middleware(h.taskToProject))
-		task.POST("/:id/comments", jwt.Middleware(h.commentTask))
-		task.GET("/:id/comments", jwt.Middleware(h.getAllComments))
-	}
+func (h *handler) Register(router *gin.Engine) {
+	router.Handle(http.MethodGet, "/tasks", jwt.Middleware(h.getAllTasks))
+	router.Handle(http.MethodGet, "/tasks/:id", jwt.Middleware(h.getTask))
+	router.Handle(http.MethodPost, "/tasks", jwt.Middleware(h.createTask))
+	router.Handle(http.MethodPatch, "/done/:id", jwt.Middleware(h.taskDone))
+	router.Handle(http.MethodDelete, "/:id", jwt.Middleware(h.deleteTask))
+	router.Handle(http.MethodPost, "/:id/projects/:projectId", jwt.Middleware(h.taskToProject))
+	router.Handle(http.MethodPost, "/:id/comments", jwt.Middleware(h.commentTask))
+	router.Handle(http.MethodGet, "/:id/comments", jwt.Middleware(h.getAllComments))
 }
 
 func (h *handler) getAllTasks(ctx *gin.Context) {
@@ -115,6 +113,40 @@ func (h *handler) getAllTasks(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, res)
+}
+
+func (h *handler) getTask(ctx *gin.Context) {
+	value, exists := ctx.Get("token")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	token, ok := value.(jwt2.MapClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, "не авторизован")
+		return
+	}
+	role := token["role"]
+	log.Println(role)
+
+	id := ctx.Param("id")
+
+	var t Task
+	var start time.Time
+	var end time.Time
+
+	err := h.storage.QueryRow(ctx, `SELECT id, title, description, start, "end", difficulty, priority, status FROM tasks WHERE id = $1`, id).
+		Scan(&t.Id, &t.Title, &t.Description, &start, &end, &t.Difficulty, &t.Priority, &t.Status)
+	if err != nil {
+		log.Println("Error while querying tasks", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	t.Start = start.Format(DDMMYYYY)
+	t.End = end.Format(DDMMYYYY)
+
+	ctx.JSON(http.StatusOK, t)
 }
 
 func (h *handler) createTask(ctx *gin.Context) {

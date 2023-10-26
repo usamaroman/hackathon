@@ -1,141 +1,23 @@
-.container{
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    overflow: hidden;
+:root{
+    --primary: #2175f5;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 .card{
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 860px;
-}
-
-.shoeBackground{
-    position: relative;
-    width: 50%;
-    height: 475px;
-    box-shadow: -15px 0 35px rgba(0, 0, 0, 0.1),
-    0 -15px 35px rgba(0, 0, 0, 0.1),
-    0 15px 35px rgba(0, 0, 0, 0.1);
-    transition: .5s;
-}
-
-.gradients{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-}
-
-.gradient{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    z-index: -2;
-}
-
-.first{
-    z-index: 0;
-    animation: 1s width ease;
-}
-
-@keyframes width{
-    from{
-        width: 0%;
-    }
-    to{
-        width: 100%;
-    }
-}
-
-.second{
-    z-index: -1;
-}
-
-.gradient[color="blue"]{
-    background-image: linear-gradient(45deg, #0136af, #22abfa);
-}
-
-.gradient[color="red"]{
-    background-image: linear-gradient(45deg, #d62926, #ee625f);
-}
-
-.gradient[color="green"]{
-    background-image: linear-gradient(45deg, #11998e, #1ce669);
-}
-
-.gradient[color="orange"]{
-    background-image: linear-gradient(45deg, #fc4a1a, #f7b733);
-}
-
-.gradient[color="black"]{
-    background-image: linear-gradient(45deg, #111, #666);
-}
-
-.logo{
-    position: absolute;
-    width: 100px;
-    left: 20px;
-    top: 20px;
-}
-
-.share{
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background-color: #fff;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    text-align: center;
-    font-size: 1.3rem;
-    text-decoration: none;
-    color: var(--primary);
-    transition: .5s;
-}
-
-.share:hover{
-    transform: scale(1.1);
-}
-
-.share i{
-    line-height: 50px;
-}
-
-.nike{
-    position: absolute;
-    top: 85px;
-    left: 15px;
-    font-size: 11rem;
-    text-transform: uppercase;
-    line-height: .9;
-    color: #fff;
-    opacity: .1;
-}
-
-.shoe{
-    position: absolute;
-    width: 140%;
-    opacity: 0;
-    bottom: 0;
-    right: 0;
-    transform: rotate(-20deg);
-    transition: .5s;
-}
-
-.shoe.show{
-    opacity: 1;
+    width: 550px;
 }
 
 .info{
-    width: 400px;
+    width: 50%;
     background-color: #fff;
     z-index: 1;
     padding: 35px 40px;
@@ -144,23 +26,23 @@
     0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
-.shoeName{
+.title{
     padding: 0 0 10px 0;
 }
 
-.shoeName div{
+.title div{
     display: flex;
     align-items: center;
 }
 
-.shoeName div .big{
+.title div .big{
     margin-right: 10px;
     font-size: 2rem;
     color: #333;
     line-height: 1;
 }
 
-.shoeName div .new{
+.title div .new{
     background-color: var(--primary);
     text-transform: uppercase;
     color: #fff;
@@ -169,15 +51,11 @@
     transition: .5s;
 }
 
-.shoeName .small{
+.title .small{
     font-weight: 500;
     color: #444;
     margin-top: 3px;
     text-transform: capitalize;
-}
-
-.shoeName, .description, .color-container, .size-container{
-    border-bottom: 1px solid #dadada;
 }
 
 .description{
@@ -189,6 +67,7 @@
     font-weight: 600;
     font-size: 1.2rem;
     text-transform: uppercase;
+    border-bottom: 1px solid #dadada;
 }
 
 .text{
@@ -196,26 +75,27 @@
     font-size: 17px;
 }
 
-.buy-price{
+.div-dates{
     padding-top: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.price{
+.dates{
     color: #333;
     display: flex;
     align-items: flex-start;
 }
 
-.price h1{
+.dates h5{
     font-size: 2.1rem;
     font-weight: 600;
     line-height: 1;
+    margin-top: 10px;
 }
 
-.price i{
+.dates i{
     font-size: 1.4rem;
     margin-right: 1px;
 }
@@ -232,19 +112,6 @@
     transition: .5s;
 }
 
-.buy:hover{
-    transform: scale(1.1);
-}
-
-.buy i{
-    margin-right: 2px;
-}
-
-@media (max-width: 1070px){
-    .shoe{
-        width: 135%;
-    }
-}
 
 @media (max-width: 1000px){
     .card{

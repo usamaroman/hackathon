@@ -54,7 +54,7 @@ img {
   background-color: hsla(0, 0%, 100%, .01);
   border: 2px solid hsla(0, 0%, 100%, .7);
   padding: 2.5rem 1rem;
-  color: var(--white-color);
+  color: var(--black-color);
   border-radius: 1rem;
   backdrop-filter: blur(16px);
 }

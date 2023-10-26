@@ -1,6 +1,7 @@
 import react, { useEffect, useState } from "react"
 import { axiosInstance } from "../../axios/axios";
-import { ProjectCard } from "../ProjectCCArd/ProjectCard";
+import { ProjectCard } from "../ProjectCard/ProjectCard";
+import "./index.css"
 
 export const GetProjects = () =>{
     const [projects, setProjects] = useState([])
@@ -12,12 +13,11 @@ export const GetProjects = () =>{
     const fetchProjects = async () => {
         const res = await axiosInstance.get("/projects")
         setProjects(res.data)
-        console.log(projects)
     }
    
     return(
-        <div style={{display: "flex"}}>
-            {projects !== undefined && projects.map(pr => <ProjectCard pr={pr} />)}
+        <div className={"projects"} >
+            {projects !== undefined && projects.map(pr => <ProjectCard key={pr.id} pr={pr} />)}
         </div>
         
     )

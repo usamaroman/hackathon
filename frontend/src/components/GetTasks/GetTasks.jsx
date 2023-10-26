@@ -5,8 +5,8 @@ export const GetTasks = () =>{
     const [tasks, setTasks] = useState([])
 
     const fetchTasks = async () => {
-        const getTasks = await axiosInstance.get("/tasks")
-        setTasks(getTasks.data)
+        const res = await axiosInstance.get("/tasks")
+        setTasks(res.data)
     }
 
     useEffect(() => {

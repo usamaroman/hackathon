@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/usamaroman/hackathon/internal/auth"
@@ -22,7 +22,14 @@ func main() {
 
 	log.Println("gin init")
 	router := gin.Default()
-	router.Use(CORSMiddleware())
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // Replace with the specific origins you want to allow
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
+
+	//router.Use(CORSMiddleware())
 
 	//log.Println("minio init")
 	//client := minio.New(cfg.Minio.Host, cfg.Minio.Port)
@@ -30,21 +37,21 @@ func main() {
 
 	log.Println("postgresql config init")
 
-	pgConfig := postgresql.NewPgConfig(
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSTGRES_PORT"),
-		os.Getenv("POSTGRES_DB"),
-	)
-
 	//pgConfig := postgresql.NewPgConfig(
-	//	"chechyotka",
-	//	"5432",
-	//	"localhost",
-	//	"5432",
-	//	"hackathon",
+	//	os.Getenv("POSTGRES_USER"),
+	//	os.Getenv("POSTGRES_PASSWORD"),
+	//	os.Getenv("POSTGRES_HOST"),
+	//	os.Getenv("POSTGRES_PORT"),
+	//	os.Getenv("POSTGRES_DB"),
 	//)
+
+	pgConfig := postgresql.NewPgConfig(
+		"chechyotka",
+		"5432",
+		"localhost",
+		"5432",
+		"hackathon",
+	)
 
 	pgClient := postgresql.NewClient(ctx, pgConfig)
 
@@ -59,16 +66,6 @@ func main() {
 
 	projectHandler := project.NewHandler(pgClient)
 	projectHandler.Register(router)
-
-	//handler := user2.NewHandler(repository, client)
-	//handler.Register(router)
-	//
-	//grpcClient := grpc.NewCarsManagementClient(cfg.ElasticSearchMicroservice.Host, cfg.ElasticSearchMicroservice.Port)
-	//carRepository := car2.NewRepository(pgClient)
-	//imgRep := images_storage.NewRepository(pgClient)
-	//reservationRep := reservation.NewRepository(pgClient)
-	//carHandler := car.NewHandler(carRepository, imgRep, reservationRep, repository, grpcClient, client)
-	//carHandler.Register(router)
 
 	router.GET("/health", func(c *gin.Context) {
 		c.String(http.StatusOK, "health")
@@ -88,12 +85,13 @@ func main() {
 	log.Fatal(server.ListenAndServe())
 
 }
+
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, OPTIONS, GET, PUT")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, DELETE, OPTIONS, GET, PUT, PATCH")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)

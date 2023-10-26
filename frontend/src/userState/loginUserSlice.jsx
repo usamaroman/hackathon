@@ -2,9 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
     isAuth: false,
-    isVerified: false,
     user: null,
-    role: "",
 }
 
 export const userSlice = createSlice({
@@ -16,12 +14,6 @@ export const userSlice = createSlice({
         },
         setIsAuth: (state) => {
             state.isAuth = true
-        },
-        setIsVerified: (state) => {
-            state.isVerified = true
-        },
-        setRole: (state, action) => {
-            state.role = action.payload
         },
         logout: (state) => {
             state.isAuth = false

@@ -25,4 +25,26 @@
   .new-project-button:hover {
     background-color: #0056b3;
   }
-  
+
+  .new-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+.home-inner {
+  min-height: 70vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.new-form button {
+  width: 300px;
+}
+
+.label {
+  border: 1px black solid;
+  padding: 15px;
+}

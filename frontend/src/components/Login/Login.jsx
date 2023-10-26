@@ -6,13 +6,11 @@ import {useDispatch} from "react-redux";
 import { axiosInstance } from '../../axios/axios';
 import image from "./login-bg.png"
 
-
 export const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
 
     const login = async () => {
         console.log(email, password);
@@ -24,18 +22,12 @@ export const Login = () => {
                 }
             ))
 
-            console.log(res)
-
             localStorage.setItem('access_token', JSON.stringify(res.data.access_token))
             localStorage.setItem('refresh_token', JSON.stringify(res.data.refresh_token))
             localStorage.setItem('user', JSON.stringify(res.data.user))
 
             dispatch(userActions.setUser(res.data.user))
-            dispatch(userActions.setRole(res.data.user.role))
             dispatch(userActions.setIsAuth())
-            if (res.data.user.is_verified === true) {
-                dispatch(userActions.setIsVerified())
-            }
 
             navigate("/")
         } catch (e) {
