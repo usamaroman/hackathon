@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -31,28 +32,26 @@ func main() {
 	}))
 
 	//router.Use(CORSMiddleware())
-
 	//log.Println("minio init")
 	//client := minio.New(cfg.Minio.Host, cfg.Minio.Port)
 	//log.Println(client)
 
 	log.Println("postgresql config init")
+	pgConfig := postgresql.NewPgConfig(
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DB"),
+	)
 
 	//pgConfig := postgresql.NewPgConfig(
-	//	os.Getenv("POSTGRES_USER"),
-	//	os.Getenv("POSTGRES_PASSWORD"),
-	//	os.Getenv("POSTGRES_HOST"),
-	//	os.Getenv("POSTGRES_PORT"),
-	//	os.Getenv("POSTGRES_DB"),
+	//	"chechyotka",
+	//	"5432",
+	//	"localhost",
+	//	"5432",
+	//	"hackathon",
 	//)
-
-	pgConfig := postgresql.NewPgConfig(
-		"chechyotka",
-		"5432",
-		"localhost",
-		"5432",
-		"hackathon",
-	)
 
 	pgClient := postgresql.NewClient(ctx, pgConfig)
 
