@@ -3,11 +3,12 @@ import axios from "axios";
 import "./newproject.css"
 import { axiosInstance } from '../../axios/axios';
 
-export const NewProject = () => {
+export const NewProject = (props) => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const {setIsProject} = props
 
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -33,12 +34,11 @@ export const NewProject = () => {
                 }
             ))
             console.log(localStorage.getItem("user"))
+            setIsProject(false)
         } catch(e) {
             console.log(e)
         }
     }
-
-    
 
     return (
         <div className="new-project-container">

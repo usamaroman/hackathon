@@ -1,5 +1,7 @@
 import react, { useEffect, useState } from "react"
 import { axiosInstance } from "../../axios/axios";
+import "./gettasks.css"
+import {TaskCard} from "../TaskCard/TaskCard";
 
 export const GetTasks = () =>{
     const [tasks, setTasks] = useState([])
@@ -14,8 +16,8 @@ export const GetTasks = () =>{
     }, [])
 
     return(
-        <div>
-            {tasks.map(pr => <div>{pr.title}</div>)}
+        <div className={"tasks"}>
+            {tasks.map(pr => <TaskCard pr={pr} />)}
         </div>
     )
 }

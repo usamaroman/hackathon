@@ -13,14 +13,14 @@ import (
 	"github.com/usamaroman/hackathon/pkg/jwt"
 )
 
-type priority string
-
 const DDMMYYYY = "02.01.2006"
 
+type priority string
+
 const (
-	PriorityLow  = "низкий"
-	PriorityMid  = "средний"
-	PriorityHigh = "высокий"
+	PriorityLow  priority = "низкий"
+	PriorityMid  priority = "средний"
+	PriorityHigh priority = "высокий"
 )
 
 type status string
@@ -58,11 +58,11 @@ func (h *handler) Register(router *gin.Engine) {
 	router.Handle(http.MethodGet, "/tasks", jwt.Middleware(h.getAllTasks))
 	router.Handle(http.MethodGet, "/tasks/:id", jwt.Middleware(h.getTask))
 	router.Handle(http.MethodPost, "/tasks", jwt.Middleware(h.createTask))
-	router.Handle(http.MethodPatch, "/done/:id", jwt.Middleware(h.taskDone))
-	router.Handle(http.MethodDelete, "/:id", jwt.Middleware(h.deleteTask))
-	router.Handle(http.MethodPost, "/:id/projects/:projectId", jwt.Middleware(h.taskToProject))
-	router.Handle(http.MethodPost, "/:id/comments", jwt.Middleware(h.commentTask))
-	router.Handle(http.MethodGet, "/:id/comments", jwt.Middleware(h.getAllComments))
+	router.Handle(http.MethodPatch, "tasks/done/:id", jwt.Middleware(h.taskDone))
+	router.Handle(http.MethodDelete, "tasks/:id", jwt.Middleware(h.deleteTask))
+	router.Handle(http.MethodPost, "tasks/:id/projects/:projectId", jwt.Middleware(h.taskToProject))
+	router.Handle(http.MethodPost, "tasks/:id/comments", jwt.Middleware(h.commentTask))
+	router.Handle(http.MethodGet, "tasks/:id/comments", jwt.Middleware(h.getAllComments))
 }
 
 func (h *handler) getAllTasks(ctx *gin.Context) {

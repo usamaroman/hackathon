@@ -9,11 +9,11 @@ export const Home = () => {
     return (
         <div className={"home-inner"}>
             {isProject ? <div className={"new-form"}>
-                <NewProject />
+                <NewProject setIsProject={setIsProject} />
                 <button onClick={() => setIsProject(false)}>закрыть</button>
             </div> : <div className={"label"} onClick={() => setIsProject(true)}>создать проект</div>}
             {isTask ? <div className={"new-form"}>
-                <NewTask />
+                <NewTask setIsTask={setIsTask} />
                 <button onClick={() => setIsTask(false)}>закрыть</button>
             </div> : <div className={"label"} onClick={() => setIsTask(true)}>создать таску</div>}
         </div>

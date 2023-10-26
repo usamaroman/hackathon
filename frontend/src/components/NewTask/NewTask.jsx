@@ -3,13 +3,14 @@ import axios from "axios";
 import "./newtask.css";
 import { axiosInstance } from "../../axios/axios";
 
-export const NewTask = () => {
+export const NewTask = (props) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [difficulty, setDifficulty] = useState("");
+  const [difficulty, setDifficulty] = useState(0);
   const [priority, setPriority] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+    const {setIsTask} = props
 
   function formatDate(dateString) {
     const date = new Date(dateString);
@@ -30,7 +31,7 @@ export const NewTask = () => {
     if (value > 100) {
       value = 100;
     }
-    setPriority(value);
+    setDifficulty(Number(value));
   };
 
   async function createTask() {
@@ -42,15 +43,20 @@ export const NewTask = () => {
         start: formatDate(startDate),
         end: formatDate(endDate),
       })
-    const createProject = await axiosInstance.post("/tasks", {
-      "title": name,
-      "description": description,
-      "difficulty": difficulty,
-      "priority": priority,
-      "start": formatDate(startDate),
-      "end": formatDate(endDate),
-    });
-    
+
+      try {
+          const createProject = await axiosInstance.post("/tasks",JSON.stringify({
+              "title": name,
+              "description": description,
+              "difficulty": Number(difficulty),
+              "priority": priority,
+              "start": formatDate(startDate),
+              "end": formatDate(endDate),
+          }));
+          setIsTask(false)
+      } catch (e) {
+          console.log(e)
+      }
   }
 
   return (
@@ -72,21 +78,21 @@ export const NewTask = () => {
       <input
         className="new-task-input"
         type="number"
-        placeholder={"Приоритет задания"}
+        placeholder={"Сложность задания"}
         min={1}
         max={100}
-        value={priority}
-        onChange={handlePriorityChange}
+        value={difficulty}
+        onChange={e => handlePriorityChange(e)}
       />
       <select
         className="new-task-input"
-        id="difficulty"
-        onChange={event => setDifficulty(event.target.value)}
+        id="priority"
+        onChange={event => setPriority(event.target.value)}
       >
         <option value="" disabled selected hidden>Сложность</option>
-        <option value="Низкая">Низкая</option>
-        <option value="Средняя">Средняя</option>
-        <option value="Высокая">Высокая</option>
+        <option value="низкий">Низкая</option>
+        <option value="средний">Средняя</option>
+        <option value="высокий">Высокая</option>
       </select>
       <input
         className="new-task-input"

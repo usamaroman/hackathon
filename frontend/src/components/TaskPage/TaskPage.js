@@ -5,39 +5,48 @@ import "./index.css"
 
 export const TaskPage = () => {
     const params = useParams()
-    const [tasks, setTasks] = useState(null)
-    const [project, setProject] = useState(null)
+    const [comments, setComments] = useState(null)
+    const [task, setTask] = useState(null)
 
     useEffect(() => {
-        // fetchTasks()
+        fetchComments()
         fetchInfo()
     }, [])
 
-    // const fetchTasks = async () => {
-    //     const res = await axiosInstance.get(`/tasks/${params.id}/tasks`)
-    //     setTasks(res.data)
-    //     console.log(tasks)
-    // }
+    const fetchComments = async () => {
+        const res = await axiosInstance.get(`/tasks/${params.id}/comments`)
+        setComments(res.data)
+        console.log(comments)
+    }
 
     const fetchInfo = async () => {
         const res = await axiosInstance.get(`/tasks/${params.id}`)
-        setProject(res.data)
-        console.log(project)
+        setTask(res.data)
+        console.log(task)
     }
 
     return (
         <div className={"project-page"}>
-            {project !== null && <div>
-                <h1>{project.title}</h1>
-                <p>{project.description}</p>
-                <div>
-                    <div>{project.start}</div>
-                    <div>{project.end}</div>
+            {task !== null && <div className={"project-inner"}>
+                <div >
+                    <h1>{task.title}</h1>
+                    <p>{task.description}</p>
+                    <div>
+                        <div>{task.start}</div>
+                        <div>{task.end}</div>
+                    </div>
+                </div>
+                <div className={"dop-info"}>
+                    <div>Приоритетность: {task.priority}</div>
+                    <div>Сложность: {task.difficulty}</div>
+                    <div>Статус: {task.status}</div>
                 </div>
             </div>}
-            {tasks !== null && tasks.map(t => <div>
-                {t.title} {t.start}-{t.end}
-            </div>)}
+            <hr/>
+            <h2>Комментарии</h2>
+            {comments !== null && comments.map(c =>
+                <div>{c.text}</div>
+            )}
         </div>
 
     )

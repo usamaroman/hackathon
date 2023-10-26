@@ -1,3 +1,12 @@
 .project-page {
     padding: 0 25px;
 }
+.project-inner {
+    display: flex;
+    align-items: center;
+    gap: 200px;
+}
+
+.dop-info {
+    margin-top: 80px
+}

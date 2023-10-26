@@ -1,21 +1,7 @@
-import react, { useEffect, useState } from "react"
-import { axiosInstance } from "../../axios/axios";
-
-export const GetProjects = () =>{
-    const [projects, setProjects] = useState([])
-
-    const fetchProjects = async () => {
-        const getProject = await axiosInstance.get("/projects")
-        setProjects(getProject.data)
-    }
-
-    useEffect(() => {
-        fetchProjects()
-    }, [])
-
-    return(
-        <div>
-            {projects.map(pr => <div>{pr.title}</div>)}
-        </div>
-    )
+.tasks {
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 30px;
+    column-gap: 30px;
 }

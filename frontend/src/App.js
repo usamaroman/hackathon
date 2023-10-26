@@ -41,9 +41,8 @@ export const App = () => {
           <Route path={"/home"} element={isAuth ? <Home/> : <Navigate to={"/login"}/>} />
           <Route path={"/projects"} element={isAuth ? <GetProjects/> : <Navigate to={"/login"}/>} />
           <Route path={"/projects/:id"} element={isAuth ? <ProjectPage /> : <Navigate to={"/login"} />}/>
-            <Route path={"/tasks/:id"} element={isAuth ? <TaskPage /> : <Navigate to={"/login"} />}/>
-
-          {/*<Route path={"/tasks"} element={isAuth ? <GetTasks /> : <Navigate to={"/login"}/>} />*/}
+          <Route path={"/tasks"} element={isAuth ? <GetTasks /> : <Navigate to={"/login"}/>} />
+          <Route path={"/tasks/:id"} element={isAuth ? <TaskPage /> : <Navigate to={"/login"} />}/>
         </>
         }
         {role === "admin" && <>
