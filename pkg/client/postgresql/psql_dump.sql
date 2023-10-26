@@ -17,7 +17,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: priority; Type: TYPE; Schema: public; Owner: chechyotka
+-- Name: priority; Type: TYPE; Schema: public; Owner: postgres
 --
 
 CREATE TYPE public.priority AS ENUM (
@@ -27,10 +27,10 @@ CREATE TYPE public.priority AS ENUM (
 );
 
 
-ALTER TYPE public.priority OWNER TO chechyotka;
+ALTER TYPE public.priority OWNER TO postgres;
 
 --
--- Name: role; Type: TYPE; Schema: public; Owner: chechyotka
+-- Name: role; Type: TYPE; Schema: public; Owner: postgres
 --
 
 CREATE TYPE public.role AS ENUM (
@@ -39,10 +39,10 @@ CREATE TYPE public.role AS ENUM (
 );
 
 
-ALTER TYPE public.role OWNER TO chechyotka;
+ALTER TYPE public.role OWNER TO postgres;
 
 --
--- Name: status; Type: TYPE; Schema: public; Owner: chechyotka
+-- Name: status; Type: TYPE; Schema: public; Owner: postgres
 --
 
 CREATE TYPE public.status AS ENUM (
@@ -52,14 +52,14 @@ CREATE TYPE public.status AS ENUM (
 );
 
 
-ALTER TYPE public.status OWNER TO chechyotka;
+ALTER TYPE public.status OWNER TO postgres;
 
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: projects; Type: TABLE; Schema: public; Owner: chechyotka
+-- Name: projects; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.projects (
@@ -71,10 +71,10 @@ CREATE TABLE public.projects (
 );
 
 
-ALTER TABLE public.projects OWNER TO chechyotka;
+ALTER TABLE public.projects OWNER TO postgres;
 
 --
--- Name: projects_tasks; Type: TABLE; Schema: public; Owner: chechyotka
+-- Name: projects_tasks; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.projects_tasks (
@@ -83,10 +83,10 @@ CREATE TABLE public.projects_tasks (
 );
 
 
-ALTER TABLE public.projects_tasks OWNER TO chechyotka;
+ALTER TABLE public.projects_tasks OWNER TO postgres;
 
 --
--- Name: tasks; Type: TABLE; Schema: public; Owner: chechyotka
+-- Name: tasks; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.tasks (
@@ -102,10 +102,10 @@ CREATE TABLE public.tasks (
 );
 
 
-ALTER TABLE public.tasks OWNER TO chechyotka;
+ALTER TABLE public.tasks OWNER TO postgres;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: chechyotka
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.users (
@@ -116,10 +116,10 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO chechyotka;
+ALTER TABLE public.users OWNER TO postgres;
 
 --
--- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: chechyotka
+-- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.projects (id, title, description, start, "end") FROM stdin;
@@ -129,7 +129,7 @@ a2f4bb07-1268-4b06-ae10-9ab48d80764f	finish hackathon	qwerty	2023-10-27 00:00:00
 
 
 --
--- Data for Name: projects_tasks; Type: TABLE DATA; Schema: public; Owner: chechyotka
+-- Data for Name: projects_tasks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.projects_tasks (project_id, task_id) FROM stdin;
@@ -138,7 +138,7 @@ COPY public.projects_tasks (project_id, task_id) FROM stdin;
 
 
 --
--- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: chechyotka
+-- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.tasks (id, title, description, start, "end", difficulty, priority, status) FROM stdin;
@@ -149,7 +149,7 @@ d234a264-e6f3-414a-b4a8-f161a8bab13b	куптьь коду	хочу колу с�
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: chechyotka
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.users (id, email, password, role) FROM stdin;
@@ -158,7 +158,7 @@ be19d517-7011-42df-aba7-9f4435c80aee	a@gmail.com	$2a$10$4H99fEJ/mA70K3cynLQ8/e6g
 
 
 --
--- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.projects
@@ -166,7 +166,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- Name: tasks tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: tasks tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.tasks
@@ -174,7 +174,7 @@ ALTER TABLE ONLY public.tasks
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users
@@ -182,7 +182,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.users
@@ -190,7 +190,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: projects_tasks projects_tasks_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: projects_tasks projects_tasks_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.projects_tasks
@@ -198,7 +198,7 @@ ALTER TABLE ONLY public.projects_tasks
 
 
 --
--- Name: projects_tasks projects_tasks_task_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: chechyotka
+-- Name: projects_tasks projects_tasks_task_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.projects_tasks
