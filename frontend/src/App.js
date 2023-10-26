@@ -24,6 +24,7 @@ function App() {
         if (user.is_verified) {
             dispatch(userActions.setIsVerified())
         }
+        dispatch(userActions.setIsAuth)
     }
     }, [dispatch]);
 
