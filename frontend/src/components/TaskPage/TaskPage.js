@@ -25,6 +25,16 @@ export const TaskPage = () => {
         console.log(task)
     }
 
+    function closeTask() {
+        try {
+            const res = axiosInstance.post(`/tasks/done/${params.id}`);
+            window.location.reload()
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
+
     return (
         <div className={"project-page"}>
             {task !== null && <div className={"project-inner"}>
@@ -47,7 +57,8 @@ export const TaskPage = () => {
             {comments !== null && comments.map(c =>
                 <div>{c.text}</div>
             )}
+            <hr/>
+            {task.priority === "надо сделать" && <button onClick={closeTask}>закрыть задачу</button>}
         </div>
-
     )
 }

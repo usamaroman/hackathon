@@ -23,7 +23,8 @@ func main() {
 	log.Println("gin init")
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Replace with the specific origins you want to allow
+		//AllowOrigins:     []string{"*"}, // Replace with the specific origins you want to allow
+		AllowOrigins:     []string{"http://localhost:3000"}, // Replace with the specific origins you want to allow
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
