@@ -1,11 +1,13 @@
 package task
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Priority
@@ -48,12 +50,50 @@ func New(storage *pgxpool.Pool) *handler {
 }
 
 func (h *handler) Register(ctx *gin.Engine) {
-	task := ctx.Group("/task")
+	task := ctx.Group("/tasks")
 	{
+		task.GET("/", h.getAllTasks) // TODO JWT
 		task.POST("/create", h.createTask)
 		task.POST("/done/:id", h.taskDone)
-		task.POST("/delete/:id", h.deleteTask)
+		task.DELETE("/:id", h.deleteTask)
 	}
+}
+
+func (h *handler) getAllTasks(ctx *gin.Context) {
+	rows, err := h.storage.Query(ctx, "SELECT * FROM tasks")
+	if err != nil {
+		log.Println("Error while querying tasks", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var tasks []task
+
+	for rows.Next() {
+		var t task
+		err := rows.Scan(&t.Id, &t.Title, &t.Description, &t.Difficulty, &t.Priority, &t.Status, &t.Start, &t.End)
+		if err != nil {
+			log.Println("Error while scanning task row", err)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		tasks = append(tasks, t)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println("Error while iterating over task rows", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	jsonData, err := json.Marshal(tasks)
+	if err != nil {
+		log.Println("Error while marshaling tasks to JSON", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	log.Println(jsonData)
+	ctx.Data(http.StatusOK, "application/json", jsonData)
 }
 
 func (h *handler) createTask(ctx *gin.Context) {
