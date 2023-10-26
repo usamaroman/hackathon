@@ -59,6 +59,20 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: comments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.comments (
+    id uuid NOT NULL,
+    text text,
+    user_id uuid,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.comments OWNER TO postgres;
+
+--
 -- Name: projects; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -105,6 +119,18 @@ CREATE TABLE public.tasks (
 ALTER TABLE public.tasks OWNER TO postgres;
 
 --
+-- Name: tasks_comments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tasks_comments (
+    task_id uuid,
+    comment_id uuid
+);
+
+
+ALTER TABLE public.tasks_comments OWNER TO postgres;
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -117,6 +143,15 @@ CREATE TABLE public.users (
 
 
 ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.comments (id, text, user_id, created_at) FROM stdin;
+d728577f-4298-4cb0-9e6e-086fab434fa1	test comment	be19d517-7011-42df-aba7-9f4435c80aee	2023-10-26 16:49:37.88869
+\.
+
 
 --
 -- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -149,12 +184,29 @@ d234a264-e6f3-414a-b4a8-f161a8bab13b	куптьь коду	хочу колу с�
 
 
 --
+-- Data for Name: tasks_comments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tasks_comments (task_id, comment_id) FROM stdin;
+a14d34e1-a755-42bd-8ad8-f8d6be6b7def	d728577f-4298-4cb0-9e6e-086fab434fa1
+\.
+
+
+--
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.users (id, email, password, role) FROM stdin;
 be19d517-7011-42df-aba7-9f4435c80aee	a@gmail.com	$2a$10$4H99fEJ/mA70K3cynLQ8/e6gckOx1Gd/50wHkoDMXROJDjcM.7yPO	user
 \.
+
+
+--
+-- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
 
 
 --
@@ -190,6 +242,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: comments comments_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: projects_tasks projects_tasks_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -203,6 +263,22 @@ ALTER TABLE ONLY public.projects_tasks
 
 ALTER TABLE ONLY public.projects_tasks
     ADD CONSTRAINT projects_tasks_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.tasks(id);
+
+
+--
+-- Name: tasks_comments tasks_comments_comment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tasks_comments
+    ADD CONSTRAINT tasks_comments_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES public.comments(id);
+
+
+--
+-- Name: tasks_comments tasks_comments_task_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tasks_comments
+    ADD CONSTRAINT tasks_comments_task_id_fkey FOREIGN KEY (task_id) REFERENCES public.tasks(id);
 
 
 --
