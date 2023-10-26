@@ -48,11 +48,12 @@ func New(storage *pgxpool.Pool) *handler {
 }
 
 func (h *handler) Register(ctx *gin.Engine) {
-	task := ctx.Group("/task")
+	task := ctx.Group("/tasks")
 	{
 		task.POST("/create", h.createTask)
-		task.POST("/done/:id", h.taskDone)
-		task.POST("/delete/:id", h.deleteTask)
+		task.PATCH("/done/:id", h.taskDone)
+		task.DELETE("/:id", h.deleteTask)
+		task.POST("/taskToProj", h.taskToProject)
 	}
 }
 
@@ -112,4 +113,18 @@ func (h *handler) taskDone(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Задача выполнена"})
+}
+
+func (h *handler) taskToProject(ctx *gin.Context) {
+	taskID := ctx.Query("taskID")
+	projID := ctx.Query("projID")
+
+	_, err := h.storage.Exec(ctx, "INSERT INTO project_task (project_id, task_id) VALUES($1, $2)", projID, taskID)
+	if err != nil {
+		log.Println("Error while adding task to project ", err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Задача добавлена в проект"})
 }
