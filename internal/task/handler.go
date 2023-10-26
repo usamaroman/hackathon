@@ -61,7 +61,7 @@ func (h *handler) Register(ctx *gin.Engine) {
 		task.POST("/", jwt.Middleware(h.createTask))
 		task.PATCH("/done/:id", jwt.Middleware(h.taskDone))
 		task.DELETE("/:id", jwt.Middleware(h.deleteTask))
-		task.POST("/taskToProj", jwt.Middleware(h.taskToProject))
+		task.POST("/:id/projects/:projectId", jwt.Middleware(h.taskToProject))
 		task.POST("/:id/comments", jwt.Middleware(h.commentTask))
 		task.GET("/:id/comments", jwt.Middleware(h.getAllComments))
 	}
@@ -236,7 +236,6 @@ func (h *handler) taskDone(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Задача выполнена"})
 }
 
-// todo
 func (h *handler) taskToProject(ctx *gin.Context) {
 	value, exists := ctx.Get("token")
 	if !exists {
@@ -251,10 +250,10 @@ func (h *handler) taskToProject(ctx *gin.Context) {
 	role := token["role"]
 	log.Println(role)
 
-	taskID := ctx.Query("taskID")
-	projID := ctx.Query("projID")
+	taskID := ctx.Param("id")
+	projID := ctx.Param("projectId")
 
-	_, err := h.storage.Exec(ctx, "INSERT INTO project_task (project_id, task_id) VALUES($1, $2)", projID, taskID)
+	_, err := h.storage.Exec(ctx, "INSERT INTO projects_tasks (project_id, task_id) VALUES($1, $2)", projID, taskID)
 	if err != nil {
 		log.Println("Error while adding task to project ", err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
