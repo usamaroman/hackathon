@@ -32,7 +32,7 @@ export const NewProject = () => {
                     "end": formatDate(endDate) 
                 }
             ))
-            console.log(createProject)
+            console.log(localStorage.getItem("user"))
         } catch(e) {
             console.log(e)
         }

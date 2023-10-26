@@ -23,6 +23,7 @@ export const Registration = () => {
         } catch (e) {
             console.log(e)
         }
+
     }
 
     return (
