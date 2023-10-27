@@ -30,9 +30,9 @@ export const Navbar = () => {
                 <div>
                     <Link to="/projects">Проекты</Link>
                 </div>
-                <div>
+                {/* <div>
                     <Link to="/tasks">Задачи</Link>
-                </div>
+                </div> */}
             </div>
             <div className={"logout"}>
                 {isAuth ? <button onClick={logout}>Выйти</button> : <button onClick={login}>логин</button>}

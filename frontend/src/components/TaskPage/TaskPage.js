@@ -5,19 +5,20 @@ import "./index.css"
 
 export const TaskPage = () => {
     const params = useParams()
-    const [comments, setComments] = useState(null)
+    const [comments, setComments] = useState([])
+    const [comment, setComment] = useState("")
     const [task, setTask] = useState(null)
 
     useEffect(() => {
-        fetchComments()
+        // fetchComments()
         fetchInfo()
     }, [])
 
-    const fetchComments = async () => {
-        const res = await axiosInstance.get(`/tasks/${params.id}/comments`)
-        setComments(res.data)
-        console.log(comments)
-    }
+    // const fetchComments = async () => {
+    //     const res = await axiosInstance.get(`/tasks/${params.id}/comments`)
+    //     setComments(res.data)
+    //     console.log(comments)
+    // }
 
     const fetchInfo = async () => {
         const res = await axiosInstance.get(`/tasks/${params.id}`)
@@ -35,6 +36,11 @@ export const TaskPage = () => {
 
     }
 
+    const saveComment = () => {
+        const updated = [...comments, comment]
+        setComments(updated)
+    }
+
     return (
         <div className={"project-page"}>
             {task !== null && <div className={"project-inner"}>
@@ -47,7 +53,7 @@ export const TaskPage = () => {
                     </div>
                 </div>
                 <div className={"dop-info"}>
-                    <div>Приоритетность: {task.priority}</div>
+                    {/* <div>Приоритетность: {task.priority}</div>   */}
                     <div>Сложность: {task.difficulty}</div>
                     <div>Статус: {task.status}</div>
                 </div>
@@ -57,8 +63,13 @@ export const TaskPage = () => {
             {comments !== null && comments.map(c =>
                 <div>{c.text}</div>
             )}
+            <div>
+                <h3>создать комментарии</h3>
+                <input type="text" value={comment} onChange={e => setComment(e.target.value)} />
+                <button onClick={saveComment}>ok</button>  
+            </div>
             <hr/>
-            {task.priority === "надо сделать" && <button onClick={closeTask}>закрыть задачу</button>}
+            <button onClick={closeTask}>закрыть задачу</button>
         </div>
     )
 }
